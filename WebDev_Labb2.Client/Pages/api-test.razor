@@ -1,0 +1,36 @@
+﻿@page "/api-test"
+@inject HttpClient Http
+
+<h3>api_test</h3>
+
+<p>This is a simple example of a page that calls an API.</p>
+
+@if (customers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+	<p>UserName: @customers.UserName</p>
+}
+
+@code {
+	private Customers? customers;
+
+	protected override async Task OnInitializedAsync()
+	{
+		customers = await Http.GetFromJsonAsync<Customers>("https://localhost:5001/api/customers");
+	}
+
+    private class Customers
+    {
+        public string UserName { get; set; }
+        public string UserLevel { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
+        public string email { get; set; }
+        public string mobileNumber { get; set; }
+        // public DeliveryAddress deliveryAddress { get; set; }
+    }
+
+}
