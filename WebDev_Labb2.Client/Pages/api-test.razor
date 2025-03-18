@@ -3,7 +3,20 @@
 
 <h3>api_test</h3>
 
-<p>This is a simple example of a page that calls an API.</p>
+<br />
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    foreach (var element in products)
+    {
+        <p>Product: @element.name</p>
+        <br />
+    }
+}
 
 @if (customers == null)
 {
@@ -11,26 +24,72 @@
 }
 else
 {
-	<p>UserName: @customers.UserName</p>
+    foreach (var customer in customers)
+    {
+        <p>UserName: @customer.username</p>
+        <p>UserLevel: @customer.userlevel</p>
+        <p>FirstName: @customer.firstname</p>
+        <p>LastName: @customer.lastname</p>
+        <p>Email: @customer.email</p>
+        <p>Mobile Number: @customer.mobile_number</p>
+        <p>Street: @customer.delivery_adress.street</p>
+        <p>Post Code: @customer.delivery_adress.post_code</p>
+        <p>City: @customer.delivery_adress.city</p>
+        <p>Country: @customer.delivery_adress.country</p>
+        <br />
+    }
 }
 
 @code {
-	private Customers? customers;
+    private Customers[]? customers;
+    private Products[]? products;
 
-	protected override async Task OnInitializedAsync()
-	{
-		customers = await Http.GetFromJsonAsync<Customers>("https://localhost:5001/api/customers");
-	}
-
-    private class Customers
+    protected override async Task OnInitializedAsync()
     {
-        public string UserName { get; set; }
-        public string UserLevel { get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
+        customers = await Http.GetFromJsonAsync<Customers[]>("http://localhost:5132/customers");
+
+        products = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+    }
+
+    public class Products
+    {
+        public string sku { get; set; }
+        public double price { get; set; }
+        public bool in_stock { get; set; }
+        public string name { get; set; }
+        public string? appearance { get; set; }
+        public double atomic_mass { get; set; }
+        public string category { get; set; }
+        public double density { get; set; }
+        public double melt { get; set; }
+        public double boil { get; set; }
+        public double number { get; set; }
+        public string phase { get; set; }
+        public string source { get; set; }
+        public string? bohr_model_image { get; set; }
+        public string summary { get; set; }
+        public string symbol { get; set; }
+        public string? cpk_hex { get; set; }
+        public string block { get; set; }
+    }
+
+    public class Customers
+    {
+        public string username { get; set; }
+        public string userlevel { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
         public string email { get; set; }
-        public string mobileNumber { get; set; }
-        // public DeliveryAddress deliveryAddress { get; set; }
+        public string mobile_number { get; set; }
+        public DeliveryAddress delivery_adress { get; set; }
+    }
+
+    public class DeliveryAddress
+    {
+        public string street { get; set; }
+        public string post_code { get; set; }
+        public string city { get; set; }
+        public string country { get; set; }
     }
 
 }
