@@ -99,56 +99,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-		specificProductSku = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestSku}");
+		//specificProductSku = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestSku}");
 
-		specificProductName = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestName}");
+		//specificProductName = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestName}");
 
         //specificCustomer = await Http.GetFromJsonAsync<Customers>($"https://localhost:7248/customers/{requestEmail}");
 
         //customers = await Http.GetFromJsonAsync<Customers[]>("http://localhost:5132/customers");
 
         //products = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
-    }
-
-    public class Products
-    {
-        public int sku { get; set; }
-        public double price { get; set; }
-        public bool in_stock { get; set; }
-        public string name { get; set; }
-        public string? appearance { get; set; }
-        public double atomic_mass { get; set; }
-        public string category { get; set; }
-        public double density { get; set; }
-        public double melt { get; set; }
-        public double boil { get; set; }
-        public double number { get; set; }
-        public string phase { get; set; }
-        public string source { get; set; }
-        public string? bohr_model_image { get; set; }
-        public string summary { get; set; }
-        public string symbol { get; set; }
-        public string? cpk_hex { get; set; }
-        public string block { get; set; }
-    }
-
-    public class Customers
-    {
-        public string username { get; set; }
-        public string userlevel { get; set; }
-        public string firstname { get; set; }
-        public string lastname { get; set; }
-        public string email { get; set; }
-        public string mobile_number { get; set; }
-        public DeliveryAddress delivery_adress { get; set; }
-    }
-
-    public class DeliveryAddress
-    {
-        public string street { get; set; }
-        public string post_code { get; set; }
-        public string city { get; set; }
-        public string country { get; set; }
     }
 
 }
