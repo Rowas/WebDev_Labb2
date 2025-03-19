@@ -7,25 +7,49 @@
 
 @if (products == null)
 {
+    <br />
     <p><em>Loading...</em></p>
 }
 else
 {
     foreach (var element in products)
     {
-        <p>Product: @element.name</p>
         <br />
+        <p>Product: @element.name</p>
     }
+}
+
+@if (specificProductSku == null)
+{
+    <br />
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <br />
+    <p>Product: @specificProductSku.name</p>
+}
+@if (specificProductName == null)
+{
+    <br />
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <br />
+    <p>Product: @specificProductName.name</p>
 }
 
 @if (customers == null)
 {
+    <br />
     <p><em>Loading...</em></p>
 }
 else
 {
     foreach (var customer in customers)
     {
+        <br />
         <p>UserName: @customer.username</p>
         <p>UserLevel: @customer.userlevel</p>
         <p>FirstName: @customer.firstname</p>
@@ -36,24 +60,59 @@ else
         <p>Post Code: @customer.delivery_adress.post_code</p>
         <p>City: @customer.delivery_adress.city</p>
         <p>Country: @customer.delivery_adress.country</p>
-        <br />
     }
+}
+
+@if (specificCustomer == null)
+{
+    <br />
+    <p><em>Searching for: @requestEmail</em></p>
+    <p><em>No content</em></p>
+}
+else
+{
+    <br />
+    <p>UserName: @specificCustomer.username</p>
+    <p>UserLevel: @specificCustomer.userlevel</p>
+    <p>FirstName: @specificCustomer.firstname</p>
+    <p>LastName: @specificCustomer.lastname</p>
+    <p>Email: @specificCustomer.email</p>
+    <p>Mobile Number: @specificCustomer.mobile_number</p>
+    <p>Street: @specificCustomer.delivery_adress.street</p>
+    <p>Post Code: @specificCustomer.delivery_adress.post_code</p>
+    <p>City: @specificCustomer.delivery_adress.city</p>
+    <p>Country: @specificCustomer.delivery_adress.country</p>
 }
 
 @code {
     private Customers[]? customers;
+    private Customers? specificCustomer;
     private Products[]? products;
+    private Products? specificProductSku;
+    private Products? specificProductName;
+
+    private string requestEmail = "andreas.lind.sahlin@iths.se";
+
+    private int requestSku = 111000;
+    private string requestName = "Helium";
+
 
     protected override async Task OnInitializedAsync()
     {
-        customers = await Http.GetFromJsonAsync<Customers[]>("http://localhost:5132/customers");
+		specificProductSku = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestSku}");
 
-        products = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+		specificProductName = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestName}");
+
+        //specificCustomer = await Http.GetFromJsonAsync<Customers>($"https://localhost:7248/customers/{requestEmail}");
+
+        //customers = await Http.GetFromJsonAsync<Customers[]>("http://localhost:5132/customers");
+
+        //products = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
     }
 
     public class Products
     {
-        public string sku { get; set; }
+        public int sku { get; set; }
         public double price { get; set; }
         public bool in_stock { get; set; }
         public string name { get; set; }
