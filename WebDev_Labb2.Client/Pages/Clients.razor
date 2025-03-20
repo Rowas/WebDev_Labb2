@@ -1,8 +1,102 @@
 ﻿@page "/clients"
 @inject HttpClient Http
+@using System.ComponentModel.DataAnnotations
 
-<h3>Clients</h3>
+<h1>Customer</h1>
+
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+<DataAnnotationsValidator />
+    <MudCard>
+        <MudForm>
+            <MudTextField Label="Email" Class="mt-3" @bind-Value="model.Email" For="@(() => model.Email)" />
+        </MudForm>
+        <MudCardActions>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Search</MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+
+@if (customer == null)
+{
+    <MudTextField Label="UserName" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Label="UserLevel" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Label="FirstName" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Label="LastName" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Label="Email" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Label="Mobile Number" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Label="Street" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Label="Post Code" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Label="City" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Label="Country" @bind-Value="Empty" Disabled="true" />
+}
+else
+{
+    <MudTextField Label="UserName" @bind-Value="customer.username" Disabled="true" />
+    <MudTextField Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" />
+    <MudTextField Label="FirstName" @bind-Value="customer.firstname" Disabled="true" />
+    <MudTextField Label="LastName" @bind-Value="customer.lastname" Disabled="true" />
+    <MudTextField Label="Email" @bind-Value="customer.email" Disabled="true" />
+    <MudTextField Label="Mobile Number" @bind-Value="customer.mobile_number" Disabled="true" />
+    <MudTextField Label="Street" @bind-Value="customer.delivery_adress.street" Disabled="true" />
+    <MudTextField Label="Post Code" @bind-Value="customer.delivery_adress.post_code" Disabled="true" />
+    <MudTextField Label="City" @bind-Value="customer.delivery_adress.city" Disabled="true" />
+    <MudTextField Label="Country" @bind-Value="customer.delivery_adress.country" Disabled="true" />
+}
+
+
+@* @if (customers == null) *@
+@* { *@
+@*     <br /> *@
+@*     <p><em>Loading...</em></p> *@
+@* } *@
+@* else *@
+@* { *@
+@*     foreach (var customer in customers) *@
+@*     { *@
+@*         <br /> *@
+@*         <MudTextField Label="UserName" @bind-Value="customer.username" Disabled="true" /> *@
+@*         <MudTextField Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" /> *@
+@*         <MudTextField Label="FirstName" @bind-Value="customer.firstname" Disabled="true" /> *@
+@*         <MudTextField Label="LastName" @bind-Value="customer.lastname" Disabled="true" /> *@
+@*         <MudTextField Label="Email" @bind-Value="customer.email" Disabled="true" /> *@
+@*         <MudTextField Label="Mobile Number" @bind-Value="customer.mobile_number" Disabled="true" /> *@
+@*         <MudTextField Label="Street" @bind-Value="customer.delivery_adress.street" Disabled="true" /> *@
+@*         <MudTextField Label="Post Code" @bind-Value="customer.delivery_adress.post_code" Disabled="true" /> *@
+@*         <MudTextField Label="City" @bind-Value="customer.delivery_adress.city" Disabled="true" /> *@
+@*         <MudTextField Label="Country" @bind-Value="customer.delivery_adress.country" Disabled="true" /> *@
+@*     } *@
+@* } *@
 
 @code {
 
+    CustomerSearch model = new CustomerSearch();
+
+    private Customers? customer;
+    private Customers[]? customers;
+    private string Empty { get; set; } = "No content";
+    private string requestEmail { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //customers = await Http.GetFromJsonAsync<Customers[]>("http://localhost:5132/customers");
+    }
+
+    private async Task Search(string email)
+    {
+        customer = await Http.GetFromJsonAsync<Customers>($"http://localhost:5132/customer/{email}");
+
+    }
+
+	public class CustomerSearch
+	{
+        [Required]
+        [EmailAddress]
+		public string Email { get; set; }
+	}
+
+    private async void OnValidSubmit(EditContext context)
+    {
+		await Search(model.Email);
+        StateHasChanged();
+    }
 }

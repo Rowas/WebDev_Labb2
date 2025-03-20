@@ -1,8 +1,35 @@
 ﻿@page "/shop"
 @inject HttpClient Http
+@inherits LayoutComponentBase
 
 <h3>Shop</h3>
+<MudGrid Justify="Justify.FlexStart">
+@if (products == null)
+{
+	<br />
+	<p><em>Loading...</em></p>
+}
+else
+{
+	foreach (var element in products)
+	{
 
+		<MudItem xs="2">
+			<MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+				<MudImage Src="@element.bohr_model_image" Alt="@element.name" Elevation="25" Class="rounded-lg" Fluid="true"/>
+				@element.name
+				<br />
+				@element.price UMC
+			</MudPaper>
+		</MudItem>
+	}
+}
+</MudGrid>
 @code {
+	private Products[]? products;
 
+	protected override async Task OnInitializedAsync()
+	{
+	products = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+	}
 }
