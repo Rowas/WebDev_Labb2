@@ -83,7 +83,7 @@ else
 
     private async Task Search(string email)
     {
-        customer = await Http.GetFromJsonAsync<Customers>($"http://localhost:5132/customer/{email}");
+        customer = await Http.GetFromJsonAsync<Customers>($"http://localhost:5132/customers/{email}");
 
     }
 
