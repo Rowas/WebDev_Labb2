@@ -1,6 +1,24 @@
-﻿@page "/shopitem"
-<h3>ShopItem</h3>
+﻿@page "/shop/{sku}"
+@inject HttpClient http
 
+@if (CurrentItem == null)
+{
+	<p>Loading...</p>
+}
+else
+{
+	<h3>@CurrentItem.name</h3>
+	<p>@CurrentItem.summary</p>
+}
 @code {
+	[Parameter]
+	public string sku { get; set; }
+	private Products CurrentItem { get; set; }
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		CurrentItem = await http.GetFromJsonAsync<Products>($"http://localhost:5132/products/{sku}");
+	}
 
 }

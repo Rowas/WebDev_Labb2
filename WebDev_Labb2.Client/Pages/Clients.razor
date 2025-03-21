@@ -5,76 +5,78 @@
 <h1>Customer</h1>
 
 <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-<DataAnnotationsValidator />
+    <DataAnnotationsValidator />
     <MudCard>
-        <MudForm>
+        <MudForm >
             <MudTextField Label="Email" Class="mt-3" @bind-Value="model.Email" For="@(() => model.Email)" />
         </MudForm>
         <MudCardActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewCustomer">Register New Customer</MudButton>
             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Search</MudButton>
         </MudCardActions>
+        @if (failure == true)
+        {
+            <MudAlert Severity="Severity.Error" Class="m-3">No customer found</MudAlert>
+        }
     </MudCard>
 </EditForm>
 
 @if (customer == null)
 {
-    <MudTextField Label="UserName" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Label="UserLevel" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Label="FirstName" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Label="LastName" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Label="Email" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Label="Mobile Number" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Label="Street" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Label="Post Code" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Label="City" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Label="Country" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="Empty" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="Empty" Disabled="true" />
+}
+else if (newCustomer == true)
+{
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="customer.username" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="customer.firstname" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="customer.lastname" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="customer.email" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="customer.mobile_number" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="customer.delivery_adress.street" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="customer.delivery_adress.post_code" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="customer.delivery_adress.city" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="customer.delivery_adress.country" />
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="RegUser">Register</MudButton>
+    @if (RegSuccess == true)
+    {
+        <MudAlert Severity="Severity.Success" Class="m-3">User Registered Successfully!</MudAlert>
+    }
 }
 else
 {
-    <MudTextField Label="UserName" @bind-Value="customer.username" Disabled="true" />
-    <MudTextField Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" />
-    <MudTextField Label="FirstName" @bind-Value="customer.firstname" Disabled="true" />
-    <MudTextField Label="LastName" @bind-Value="customer.lastname" Disabled="true" />
-    <MudTextField Label="Email" @bind-Value="customer.email" Disabled="true" />
-    <MudTextField Label="Mobile Number" @bind-Value="customer.mobile_number" Disabled="true" />
-    <MudTextField Label="Street" @bind-Value="customer.delivery_adress.street" Disabled="true" />
-    <MudTextField Label="Post Code" @bind-Value="customer.delivery_adress.post_code" Disabled="true" />
-    <MudTextField Label="City" @bind-Value="customer.delivery_adress.city" Disabled="true" />
-    <MudTextField Label="Country" @bind-Value="customer.delivery_adress.country" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="customer.username" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="customer.firstname" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="customer.lastname" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="customer.email" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="customer.mobile_number" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="customer.delivery_adress.street" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="customer.delivery_adress.post_code" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="customer.delivery_adress.city" Disabled="true" />
+    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="customer.delivery_adress.country" Disabled="true" />
 }
-
-
-@* @if (customers == null) *@
-@* { *@
-@*     <br /> *@
-@*     <p><em>Loading...</em></p> *@
-@* } *@
-@* else *@
-@* { *@
-@*     foreach (var customer in customers) *@
-@*     { *@
-@*         <br /> *@
-@*         <MudTextField Label="UserName" @bind-Value="customer.username" Disabled="true" /> *@
-@*         <MudTextField Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" /> *@
-@*         <MudTextField Label="FirstName" @bind-Value="customer.firstname" Disabled="true" /> *@
-@*         <MudTextField Label="LastName" @bind-Value="customer.lastname" Disabled="true" /> *@
-@*         <MudTextField Label="Email" @bind-Value="customer.email" Disabled="true" /> *@
-@*         <MudTextField Label="Mobile Number" @bind-Value="customer.mobile_number" Disabled="true" /> *@
-@*         <MudTextField Label="Street" @bind-Value="customer.delivery_adress.street" Disabled="true" /> *@
-@*         <MudTextField Label="Post Code" @bind-Value="customer.delivery_adress.post_code" Disabled="true" /> *@
-@*         <MudTextField Label="City" @bind-Value="customer.delivery_adress.city" Disabled="true" /> *@
-@*         <MudTextField Label="Country" @bind-Value="customer.delivery_adress.country" Disabled="true" /> *@
-@*     } *@
-@* } *@
 
 @code {
 
     CustomerSearch model = new CustomerSearch();
 
+    private bool newCustomer = false;
     private Customers? customer;
     private Customers[]? customers;
     private string Empty { get; set; } = "No content";
     private string requestEmail { get; set; }
+    bool failure = false;
+    bool RegSuccess = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,19 +86,58 @@ else
     private async Task Search(string email)
     {
         customer = await Http.GetFromJsonAsync<Customers>($"http://localhost:5132/customers/{email}");
-
+        if (customer == null)
+        {
+            failure = true;
+        }
+        else
+        {
+            failure = false;
+        }
     }
 
-	public class CustomerSearch
-	{
+    public class CustomerSearch
+    {
         [Required]
         [EmailAddress]
-		public string Email { get; set; }
-	}
+        public string Email { get; set; }
+    }
 
     private async void OnValidSubmit(EditContext context)
     {
-		await Search(model.Email);
+        await Search(model.Email);
         StateHasChanged();
     }
+
+    private void NewCustomer()
+    {
+        newCustomer = true;
+        customer = new Customers()
+        {
+				email = "",
+				username = "",
+                userlevel = "customer",
+                firstname = "",
+                lastname = "",
+                mobile_number = "",
+                delivery_adress = new DeliveryAddress()
+				{
+					street = "",
+					post_code = "",
+					city = "",
+					country = ""
+				}
+        };
+        StateHasChanged();
+    }
+
+	private async void RegUser()
+	{
+		var response = await Http.PostAsJsonAsync<Customers>("http://localhost:5132/customers", customer);
+		if (response.StatusCode == System.Net.HttpStatusCode.OK)
+		{
+			RegSuccess = true;
+			StateHasChanged();
+		}
+	}
 }

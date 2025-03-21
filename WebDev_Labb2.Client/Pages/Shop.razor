@@ -1,32 +1,41 @@
-﻿@page "/shop"
+﻿@page "/shop/"
 @inject HttpClient Http
 @inherits LayoutComponentBase
+@inject NavigationManager UriHelper
 
 <h3>Shop</h3>
 <MudGrid Justify="Justify.FlexStart">
-@if (products == null)
-{
-	<br />
-	<p><em>Loading...</em></p>
-}
-else
-{
-	foreach (var element in products)
+	@if (products == null)
 	{
-
-		<MudItem xs="2">
-			<MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8">
-				<MudImage Src="@element.bohr_model_image" Alt="@element.name" Elevation="25" Class="rounded-lg" Fluid="true"/>
-				@element.name
-				<br />
-				@element.price UMC
-			</MudPaper>
-		</MudItem>
+		<br />
+		<p><em>Loading...</em></p>
 	}
-}
+	else
+	{
+		foreach (var element in products)
+		{
+
+			<MudItem xs="2">
+				<MudPaper Class="d-flex flex-column align-center justify-center mud-width-full py-8">
+
+					<MudImage Src="@element.bohr_model_image" Alt="@element.name" Elevation="25" Class="rounded-lg" Fluid="true"/>
+					<b><a href="shop/@element.sku">@element.name</a></b>
+					<br />
+					@element.price UMC
+				</MudPaper>
+			</MudItem>
+		}
+	}
 </MudGrid>
 @code {
 	private Products[]? products;
+	// private string? Param = null;
+
+	private void OpenItem(string Param)
+	{
+
+		UriHelper.NavigateTo($"shop/{Param}");
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
