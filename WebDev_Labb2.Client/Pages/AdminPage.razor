@@ -1,0 +1,134 @@
+﻿@page "/admin"
+@inject HttpClient Http
+
+<h3>Admin Page</h3>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewCustomer">Register New Customer</MudButton>
+<br />
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewProduct">Register New Product</MudButton>
+
+@if (newCustomer == true)
+{
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="customer.username" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="customer.firstname" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="customer.lastname" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="customer.email" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="customer.mobile_number" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="customer.delivery_adress.street" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="customer.delivery_adress.post_code" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="customer.delivery_adress.city" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="customer.delivery_adress.country" />
+	<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="RegUser">Register</MudButton>
+	@if (custRegSuccess == true)
+	{
+		<MudAlert Severity="Severity.Success" Class="m-3">User Registered Successfully!</MudAlert>
+	}
+}
+
+@if (newProduct == true)
+{
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="product.sku" Disabled="true" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="product.price" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="product.in_stock" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="product.name" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="product.appearance" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="product.atomic_mass" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="product.category" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="product.density" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="product.melt" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.boil" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.number" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.phase" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.source" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.bohr_model_image" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.summary" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.symbol" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.cpk_hex" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.block" />
+	<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="RegUser">Register</MudButton>
+	@if (prodRegSuccess == true)
+	{
+		<MudAlert Severity="Severity.Success" Class="m-3">User Registered Successfully!</MudAlert>
+	}
+}
+
+@code {
+	private bool newCustomer = false;
+	private bool newProduct = false;
+	private bool prodRegSuccess = false;
+	private bool custRegSuccess = false;
+	Customers customer = new Customers();
+	Products product = new Products();
+
+	private void NewCustomer()
+	{
+		newProduct = false;
+		newCustomer = true;
+		customer = new Customers()
+			{
+				email = "",
+				username = "",
+				userlevel = "customer",
+				firstname = "",
+				lastname = "",
+				mobile_number = "",
+				delivery_adress = new DeliveryAddress()
+				{
+					street = "",
+					post_code = "",
+					city = "",
+					country = ""
+				}
+			};
+		StateHasChanged();
+	}
+
+	private void NewProduct()
+	{
+		newCustomer = false;
+		newProduct = true;
+		product = new Products()
+			{
+				sku = 0,
+				price = 0,
+				in_stock = false,
+				name = "",
+				appearance = "",
+				atomic_mass = 0,
+				category = "",
+				density = 0,
+				melt = 0,
+				boil = 0,
+				number = 0,
+				phase = "",
+				source = "",
+				bohr_model_image = "",
+				summary = "",
+				symbol = "",
+				cpk_hex = "",
+				block = ""
+			};
+		StateHasChanged();
+	}
+
+	private async void RegUser()
+	{
+		var response = await Http.PostAsJsonAsync<Customers>("http://localhost:5132/customers", customer);
+		if (response.StatusCode == System.Net.HttpStatusCode.OK)
+		{
+			custRegSuccess = true;
+			StateHasChanged();
+		}
+	}
+
+	private async void RegProduct()
+	{
+		var response = await Http.PostAsJsonAsync<Products>("http://localhost:5132/products", product);
+		if (response.StatusCode == System.Net.HttpStatusCode.OK)
+		{
+			prodRegSuccess = true;
+			StateHasChanged();
+		}
+	}
+}

@@ -11,7 +11,6 @@
             <MudTextField Label="Email" Class="mt-3" @bind-Value="model.Email" For="@(() => model.Email)" />
         </MudForm>
         <MudCardActions>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewCustomer">Register New Customer</MudButton>
             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Search</MudButton>
         </MudCardActions>
         @if (failure == true)
@@ -33,24 +32,6 @@
     <MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="Empty" Disabled="true" />
     <MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="Empty" Disabled="true" />
     <MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="Empty" Disabled="true" />
-}
-else if (newCustomer == true)
-{
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="customer.username" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="customer.firstname" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="customer.lastname" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="customer.email" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="customer.mobile_number" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="customer.delivery_adress.street" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="customer.delivery_adress.post_code" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="customer.delivery_adress.city" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="customer.delivery_adress.country" />
-    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="RegUser">Register</MudButton>
-    @if (RegSuccess == true)
-    {
-        <MudAlert Severity="Severity.Success" Class="m-3">User Registered Successfully!</MudAlert>
-    }
 }
 else
 {
@@ -108,36 +89,4 @@ else
         await Search(model.Email);
         StateHasChanged();
     }
-
-    private void NewCustomer()
-    {
-        newCustomer = true;
-        customer = new Customers()
-        {
-				email = "",
-				username = "",
-                userlevel = "customer",
-                firstname = "",
-                lastname = "",
-                mobile_number = "",
-                delivery_adress = new DeliveryAddress()
-				{
-					street = "",
-					post_code = "",
-					city = "",
-					country = ""
-				}
-        };
-        StateHasChanged();
-    }
-
-	private async void RegUser()
-	{
-		var response = await Http.PostAsJsonAsync<Customers>("http://localhost:5132/customers", customer);
-		if (response.StatusCode == System.Net.HttpStatusCode.OK)
-		{
-			RegSuccess = true;
-			StateHasChanged();
-		}
-	}
 }
