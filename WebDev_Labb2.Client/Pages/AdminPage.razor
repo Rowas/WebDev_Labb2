@@ -19,9 +19,16 @@
 	<MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="customer.delivery_adress.city" />
 	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="customer.delivery_adress.country" />
 	<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="RegUser">Register</MudButton>
-	@if (custRegSuccess == true)
+	@if (apiCall == true)
 	{
-		<MudAlert Severity="Severity.Success" Class="m-3">User Registered Successfully!</MudAlert>
+		if (apiResponse == $"Customer {customer.firstname} {customer.lastname} added sucessfully.")
+		{
+			<MudAlert Severity="Severity.Success" Class="m-3">@apiResponse</MudAlert>
+		}
+		else
+		{
+			<MudAlert Severity="Severity.Error" Class="m-3">@apiResponse</MudAlert>
+		}
 	}
 }
 
@@ -56,7 +63,8 @@
 	private bool newCustomer = false;
 	private bool newProduct = false;
 	private bool prodRegSuccess = false;
-	private bool custRegSuccess = false;
+	private bool apiCall = false;
+	private string apiResponse = string.Empty;
 	Customers customer = new Customers();
 	Products product = new Products();
 
@@ -116,7 +124,8 @@
 		var response = await Http.PostAsJsonAsync<Customers>("http://localhost:5132/customers", customer);
 		if (response.StatusCode == System.Net.HttpStatusCode.OK)
 		{
-			custRegSuccess = true;
+			apiCall = true;
+			apiResponse = response.Content.ReadAsStringAsync().Result;
 			StateHasChanged();
 		}
 	}
