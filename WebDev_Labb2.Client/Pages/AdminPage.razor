@@ -3,9 +3,8 @@
 
 <h3>Admin Page</h3>
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewCustomer">Register New Customer</MudButton>
-<br />
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewProduct">Register New Product</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewCustomer" Style="min-width:250px padding:15px">Register New Customer</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewProduct" Style="min-width:250px padding:15px">Register New Product</MudButton>
 
 @if (newCustomer == true)
 {
@@ -28,24 +27,24 @@
 
 @if (newProduct == true)
 {
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="product.sku" Disabled="true" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="product.price" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="product.in_stock" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="product.name" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="product.appearance" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="product.atomic_mass" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="product.category" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="product.density" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="product.melt" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.boil" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.number" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.phase" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.source" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.bohr_model_image" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.summary" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.symbol" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.cpk_hex" />
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="product.block" />
+	<MudTextField Variant="Variant.Outlined" InputType="InputType.Number" style="color: white" Label="Product SKU" @bind-Value="product.sku" Disabled="true" />
+	<MudTextField Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.CurrencyBitcoin" InputType="InputType.Number" style="color: white" Label="Product Price" @bind-Value="product.price" />
+	<MudSwitch @bind-Value="product.in_stock" Label="Product in stock?" Color="Color.Primary" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Product Name" @bind-Value="product.name" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Product Apperance" @bind-Value="product.appearance" />
+	<MudTextField Variant="Variant.Outlined" InputType="InputType.Number" style="color: white" Label="Product Atomic Mass" @bind-Value="product.atomic_mass" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Product Category" @bind-Value="product.category" />
+	<MudTextField Variant="Variant.Outlined" InputType="InputType.Number" style="color: white" Label="Product Density" @bind-Value="product.density" />
+	<MudTextField Variant="Variant.Outlined" InputType="InputType.Number" style="color: white" Label="Product Melting Point" @bind-Value="product.melt" />
+	<MudTextField Variant="Variant.Outlined" InputType="InputType.Number" style="color: white" Label="Product Boiling Point" @bind-Value="product.boil" />
+	<MudTextField Variant="Variant.Outlined" InputType="InputType.Number" style="color: white" Label="Product Number" @bind-Value="product.number" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Product Phase" @bind-Value="product.phase" />
+	<MudTextField Variant="Variant.Outlined" InputType="InputType.Url" style="color: white" Label="Product Wiki Source" @bind-Value="product.source" />
+	<MudTextField Variant="Variant.Outlined" InputType="InputType.Url" style="color: white" Label="Product Bohr Model Image" @bind-Value="product.bohr_model_image" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Product Summary" @bind-Value="product.summary" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Product Symbol" @bind-Value="product.symbol" />
+	<MudTextField Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Tag" style="color: white" Label="Product CPK Hex" @bind-Value="product.cpk_hex" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Product Block" @bind-Value="product.block" />
 	<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="RegUser">Register</MudButton>
 	@if (prodRegSuccess == true)
 	{
