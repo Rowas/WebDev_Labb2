@@ -3,14 +3,14 @@
 
 <h3>Admin Page</h3>
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewCustomer" Style="min-width:250px padding:15px">Register New Customer</MudButton>
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="EditCustomer" Style="min-width:250px padding:15px">Edit Customer</MudButton>
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewProduct" Style="min-width:250px padding:15px">Register New Product</MudButton>
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="EditProduct" Style="min-width:250px padding:15px">Edit Product</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewCustomer" Style="min-width:200px; padding:15px;">Register New Customer</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="EditCustomer" Style="min-width:200px; padding:15px;">Edit Customer</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewProduct" Style="min-width:200px; padding:15px;">Register New Product</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="EditProduct" Style="min-width:200px; padding:15px;">Edit Product</MudButton>
 
 @if (editCustomer == true)
 {
-	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Search Customer" @bind-Value="customerSearch" />
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Search Customer Email" @bind-Value="customerSearch" />
 	<MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" class="ml-auto" onclick="SearchCustomer">Search Customer to Edit</MudButton>
 	@if (apiCall == true)
 	{
@@ -30,6 +30,24 @@
 			<MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="customer.delivery_adress.post_code" />
 			<MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="customer.delivery_adress.city" />
 			<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="customer.delivery_adress.country" />
+			<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="UpdateUser">Update User</MudButton>
+		}
+	}
+}
+
+@if (editProduct == true)
+{
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Search Product" @bind-Value="productSearch" />
+	<MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" class="ml-auto" onclick="SearchProduct">Search Product to Edit</MudButton>
+	@if (apiCall == true)
+	{
+		@if (apiResponse == "Customer not found")
+		{
+			<MudAlert Severity="Severity.Error" Class="m-3">@apiResponse</MudAlert>
+		}
+		else
+		{
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="Product Name" @bind-Value="product.name" />
 			<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="UpdateUser">Update User</MudButton>
 		}
 	}
@@ -102,6 +120,7 @@
 	private string apiResponse = string.Empty;
 
 	private string customerSearch = string.Empty;
+	private string productSearch = string.Empty;
 	private string editField = string.Empty;
 	private string editValue = string.Empty;
 
@@ -191,6 +210,18 @@
 			apiResponse = "Customer not found";
 		}
 
+		StateHasChanged();
+	}
+
+	private async void SearchProduct()
+	{
+		apiCall = false;
+		product = await Http.GetFromJsonAsync<Products>($"http://localhost:5132/products/{productSearch}");
+		apiCall = true;
+		if (product == null)
+		{
+			apiResponse = "Product not found";
+		}
 		StateHasChanged();
 	}
 
