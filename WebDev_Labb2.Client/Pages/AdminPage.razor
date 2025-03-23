@@ -4,7 +4,36 @@
 <h3>Admin Page</h3>
 
 <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewCustomer" Style="min-width:250px padding:15px">Register New Customer</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="EditCustomer" Style="min-width:250px padding:15px">Edit Customer</MudButton>
 <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewProduct" Style="min-width:250px padding:15px">Register New Product</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="EditProduct" Style="min-width:250px padding:15px">Edit Product</MudButton>
+
+@if (editCustomer == true)
+{
+	<MudTextField Variant="Variant.Outlined" style="color: white" Label="Search Customer" @bind-Value="customerSearch" />
+	<MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" class="ml-auto" onclick="SearchCustomer">Search Customer to Edit</MudButton>
+	@if (apiCall == true)
+	{
+		@if (apiResponse == "Customer not found")
+		{
+			<MudAlert Severity="Severity.Error" Class="m-3">@apiResponse</MudAlert>
+		}
+		else
+		{
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="customer.username" />
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" />
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="customer.firstname" />
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="customer.lastname" />
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="customer.email" />
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="customer.mobile_number" />
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="customer.delivery_adress.street" />
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="customer.delivery_adress.post_code" />
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="customer.delivery_adress.city" />
+			<MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="customer.delivery_adress.country" />
+			<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="UpdateUser">Update User</MudButton>
+		}
+	}
+}
 
 @if (newCustomer == true)
 {
@@ -21,13 +50,13 @@
 	<MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="RegUser">Register</MudButton>
 	@if (apiCall == true)
 	{
-		if (apiResponse == $"Customer {customer.firstname} {customer.lastname} added sucessfully.")
+		if (apiResponse == "Customer not found")
 		{
-			<MudAlert Severity="Severity.Success" Class="m-3">@apiResponse</MudAlert>
+			<MudAlert Severity="Severity.Error" Class="m-3">@apiResponse</MudAlert>
 		}
 		else
 		{
-			<MudAlert Severity="Severity.Error" Class="m-3">@apiResponse</MudAlert>
+			<MudAlert Severity="Severity.Success" Class="m-3">@apiResponse</MudAlert>
 		}
 	}
 }
@@ -62,15 +91,28 @@
 @code {
 	private bool newCustomer = false;
 	private bool newProduct = false;
+	private bool editProduct = false;
+	private bool editCustomer = false;
+
+
 	private bool prodRegSuccess = false;
+
 	private bool apiCall = false;
+
 	private string apiResponse = string.Empty;
+
+	private string customerSearch = string.Empty;
+	private string editField = string.Empty;
+	private string editValue = string.Empty;
+
 	Customers customer = new Customers();
 	Products product = new Products();
 
 	private void NewCustomer()
 	{
 		newProduct = false;
+		editCustomer = false;
+		editProduct = false;
 		newCustomer = true;
 		customer = new Customers()
 			{
@@ -94,6 +136,8 @@
 	private void NewProduct()
 	{
 		newCustomer = false;
+		editCustomer = false;
+		editProduct = false;
 		newProduct = true;
 		product = new Products()
 			{
@@ -119,6 +163,37 @@
 		StateHasChanged();
 	}
 
+	private void EditProduct()
+	{
+		newCustomer = false;
+		newProduct = false;
+		editCustomer = false;
+		editProduct = true;
+		StateHasChanged();
+	}
+
+	private void EditCustomer()
+	{
+		newCustomer = false;
+		newProduct = false;
+		editProduct = false;
+		editCustomer = true;
+		StateHasChanged();
+	}
+
+	private async void SearchCustomer()
+	{
+		apiCall = false;
+		customer = await Http.GetFromJsonAsync<Customers>($"http://localhost:5132/customers/{customerSearch}");
+		apiCall = true;
+		if (customer == null)
+		{
+			apiResponse = "Customer not found";
+		}
+
+		StateHasChanged();
+	}
+
 	private async void RegUser()
 	{
 		var response = await Http.PostAsJsonAsync<Customers>("http://localhost:5132/customers", customer);
@@ -136,6 +211,18 @@
 		if (response.StatusCode == System.Net.HttpStatusCode.OK)
 		{
 			prodRegSuccess = true;
+			StateHasChanged();
+		}
+	}
+
+	private async void UpdateUser()
+	{
+
+		var response = await Http.PatchAsJsonAsync<Customers>("http://localhost:5132/customers", customer);
+		if (response.StatusCode == System.Net.HttpStatusCode.OK)
+		{
+			apiCall = true;
+			apiResponse = response.Content.ReadAsStringAsync().Result;
 			StateHasChanged();
 		}
 	}
