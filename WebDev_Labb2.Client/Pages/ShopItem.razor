@@ -1,20 +1,52 @@
 ﻿@page "/shop/{sku}"
 @inject HttpClient http
-
 @if (CurrentItem == null)
 {
-	<p>Loading...</p>
+    <p>Loading...</p>
 }
 else
 {
-	<h3>@CurrentItem.name</h3>
-	<p>@CurrentItem.summary</p>
+    <MudLayout>
+        <MudMainContent>
+            <MudContainer MaxWidth="MaxWidth.Large" Class="d-flex">
+                <MudPaper Class="pa-4 flex-grow-1" Elevation="1">
+                    <MudText Typo="Typo.h4">@CurrentItem.name</MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="false">Add to Cart</MudButton>
+                    <MudDivider Class="my-2" />
+                    <MudText Typo="Typo.body1">
+                        @CurrentItem.summary
+                    </MudText>
+                </MudPaper>
+
+                <MudPaper Class="pa-4 ml-4" Elevation="2" Style="width: 850px; background-color: var(--mud-palette-background);
+                border: 1px solid var(--mud-palette-divider);">
+                    <MudText Typo="Typo.h6">Product Details</MudText>
+                    <MudDivider Class="my-2" />
+                    <MudText Typo="Typo.body2">
+                        <strong>Price:</strong> @CurrentItem.price
+                    </MudText>
+                    <MudText Typo="Typo.body2">
+                        <strong>Category:</strong> @CurrentItem.category
+                    </MudText>
+                    <MudText Typo="Typo.body2">
+                        <strong>Stock:</strong> @CurrentItem.in_stock
+                    </MudText>
+                    <MudDivider Class="my-2" />
+                </MudPaper>
+            </MudContainer>
+            <MudContainer Class="align-content-start">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="false">Previous Item</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="false">Next Item</MudButton>
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+
 }
+
 @code {
 	[Parameter]
 	public string sku { get; set; }
 	private Products CurrentItem { get; set; }
-
 
 	protected override async Task OnInitializedAsync()
 	{

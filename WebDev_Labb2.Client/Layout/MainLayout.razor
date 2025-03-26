@@ -6,7 +6,7 @@
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">MME</MudText>
         <MudSpacer />
         <NavMenu />
         <MudSpacer />
@@ -14,7 +14,7 @@
     </MudAppBar>
     <MudMainContent Class="mt-16 pa-4">
         <MudContainer MaxWidth="MaxWidth.Medium">
-        @Body
+            @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
@@ -30,6 +30,8 @@
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
 
+    static List<Products> ProductList { get; set; }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -40,6 +42,8 @@
             PaletteDark = _darkPalette,
             LayoutProperties = new LayoutProperties()
         };
+
+        ProductList = new();
     }
 
     private void DarkModeToggle()
