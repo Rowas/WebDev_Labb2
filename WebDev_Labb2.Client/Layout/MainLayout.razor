@@ -30,8 +30,6 @@
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
 
-    static List<Products> ProductList { get; set; }
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -42,8 +40,6 @@
             PaletteDark = _darkPalette,
             LayoutProperties = new LayoutProperties()
         };
-
-        ProductList = new();
     }
 
     private void DarkModeToggle()

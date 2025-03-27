@@ -1,5 +1,7 @@
 ﻿@page "/shop/{sku}"
 @inject HttpClient http
+@inject NavigationManager UriHelper
+
 @if (CurrentItem == null)
 {
     <p>Loading...</p>
@@ -8,35 +10,59 @@ else
 {
     <MudLayout>
         <MudMainContent>
+            <MudContainer Class="d-flex justify-space-between mt-4">
+                @if(prevItem != null)
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary">
+                        &larr; @prevItem.name
+                    </MudButton>
+                }
+                @if(nextItem != null)
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => GoToProduct(nextItem.sku)">
+                        @nextItem.name &rarr;
+                    </MudButton>
+                }
+            </MudContainer>
+            <MudDivider Class="my-2" />
+
             <MudContainer MaxWidth="MaxWidth.Large" Class="d-flex">
                 <MudPaper Class="pa-4 flex-grow-1" Elevation="1">
                     <MudText Typo="Typo.h4">@CurrentItem.name</MudText>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="false">Add to Cart</MudButton>
                     <MudDivider Class="my-2" />
                     <MudText Typo="Typo.body1">
                         @CurrentItem.summary
                     </MudText>
                 </MudPaper>
 
-                <MudPaper Class="pa-4 ml-4" Elevation="2" Style="width: 850px; background-color: var(--mud-palette-background);
+                <MudPaper Class="pa-4 ml-4" Elevation="2" Style="width: 600px; background-color: var(--mud-palette-background);
                 border: 1px solid var(--mud-palette-divider);">
                     <MudText Typo="Typo.h6">Product Details</MudText>
                     <MudDivider Class="my-2" />
-                    <MudText Typo="Typo.body2">
-                        <strong>Price:</strong> @CurrentItem.price
-                    </MudText>
-                    <MudText Typo="Typo.body2">
-                        <strong>Category:</strong> @CurrentItem.category
-                    </MudText>
-                    <MudText Typo="Typo.body2">
-                        <strong>Stock:</strong> @CurrentItem.in_stock
-                    </MudText>
+                    <MudText Typo="Typo.body2"><strong>SKU:</strong> @CurrentItem.sku</MudText>
+                    <MudText Typo="Typo.body2"><strong>Price:</strong> @CurrentItem.price</MudText>
+                    <MudText Typo="Typo.body2"><strong>In Stock:</strong> @CurrentItem.in_stock</MudText>
+                    <MudText Typo="Typo.body2"><strong>Category:</strong> @CurrentItem.category</MudText>
+                    <MudText Typo="Typo.body2"><strong>Appearance:</strong> @CurrentItem.appearance</MudText>
+                    <MudText Typo="Typo.body2"><strong>Atomic Mass:</strong> @CurrentItem.atomic_mass</MudText>
+                    <MudText Typo="Typo.body2"><strong>Boiling Point:</strong> @CurrentItem.boil</MudText>
+                    <MudText Typo="Typo.body2"><strong>Density:</strong> @CurrentItem.density</MudText>
+                    <MudText Typo="Typo.body2"><strong>Discovered By:</strong> @CurrentItem.discovered_by</MudText>
+                    <MudText Typo="Typo.body2"><strong>Melting Point:</strong> @CurrentItem.melt</MudText>
+                    <MudText Typo="Typo.body2"><strong>Molar Heat:</strong> @CurrentItem.molar_heat</MudText>
+                    <MudText Typo="Typo.body2"><strong>Named By:</strong> @CurrentItem.named_by</MudText>
+                    <MudText Typo="Typo.body2"><strong>Number:</strong> @CurrentItem.number</MudText>
+                    <MudText Typo="Typo.body2"><strong>Period:</strong> @CurrentItem.period</MudText>
+                    <MudText Typo="Typo.body2"><strong>Group:</strong> @CurrentItem.group</MudText>
+                    <MudText Typo="Typo.body2"><strong>Phase:</strong> @CurrentItem.phase</MudText>
+                    <MudText Typo="Typo.body2"><strong>Source:</strong> <a href="@CurrentItem.source">Link</a></MudText>
+                    <MudText Typo="Typo.body2"><strong>Electron Configuration:</strong> @CurrentItem.electron_configuration</MudText>
+                    <MudText Typo="Typo.body2"><strong>Electron Affinity:</strong> @CurrentItem.electron_affinity</MudText>
+                    <MudText Typo="Typo.body2"><strong>Electronegativity:</strong> @CurrentItem.electronegativity_pauling</MudText>
+                    <MudText Typo="Typo.body2"><strong>Block:</strong> @CurrentItem.block</MudText>
                     <MudDivider Class="my-2" />
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Add to Cart</MudButton>
                 </MudPaper>
-            </MudContainer>
-            <MudContainer Class="align-content-start">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="false">Previous Item</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="false">Next Item</MudButton>
             </MudContainer>
         </MudMainContent>
     </MudLayout>
@@ -44,13 +70,40 @@ else
 }
 
 @code {
-	[Parameter]
-	public string sku { get; set; }
-	private Products CurrentItem { get; set; }
+    [Parameter]
+    public string sku { get; set; }
+    private Products CurrentItem { get; set; }
+    private Products[] ProdList { get; set; }
+    private Products? nextItem { get; set; }
+    private Products? prevItem { get; set; }
 
-	protected override async Task OnInitializedAsync()
-	{
-		CurrentItem = await http.GetFromJsonAsync<Products>($"http://localhost:5132/products/{sku}");
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentItem = await http.GetFromJsonAsync<Products>($"http://localhost:5132/products/{sku}");
+        ProdList = await http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+
+        if (CurrentItem.number != ProdList.Length)
+        {
+            nextItem = ProdList.FirstOrDefault(p => p.number == CurrentItem.number + 1);
+        }
+        else
+        {
+            nextItem = null;
+        }
+        if (CurrentItem.number != 0)
+        {
+            prevItem = ProdList.FirstOrDefault(p => p.number == CurrentItem.number - 1);
+        }
+        else
+        {
+            prevItem = null;
+        }
+    }
+
+    private void GoToProduct(int sku)
+    {
+        UriHelper.NavigateTo($"shop/{sku}");
+        UriHelper.Refresh();
+    }
 
 }
