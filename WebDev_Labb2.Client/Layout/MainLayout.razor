@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject HttpClient Http
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
@@ -29,6 +30,7 @@
 @code {
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
+    public static Products[]? productsList;
 
     protected override void OnInitialized()
     {
@@ -40,6 +42,14 @@
             PaletteDark = _darkPalette,
             LayoutProperties = new LayoutProperties()
         };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (productsList == null)
+        {
+            productsList = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+        }
     }
 
     private void DarkModeToggle()

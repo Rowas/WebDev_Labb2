@@ -13,7 +13,7 @@ else
             <MudContainer Class="d-flex justify-space-between mt-4">
                 @if(prevItem != null)
                 {
-                    <MudButton Variant="Variant.Outlined" Color="Color.Primary">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => GoToProduct(prevItem.sku)">
                         &larr; @prevItem.name
                     </MudButton>
                 }
@@ -55,7 +55,10 @@ else
                     <MudText Typo="Typo.body2"><strong>Period:</strong> @CurrentItem.period</MudText>
                     <MudText Typo="Typo.body2"><strong>Group:</strong> @CurrentItem.group</MudText>
                     <MudText Typo="Typo.body2"><strong>Phase:</strong> @CurrentItem.phase</MudText>
-                    <MudText Typo="Typo.body2"><strong>Source:</strong> <a href="@CurrentItem.source">Link</a></MudText>
+                    @if (CurrentItem.source != null)
+                    {
+                        <MudText Typo="Typo.body2"><strong>Source:</strong> <a href="@CurrentItem.source">Wikipedia</a></MudText>
+                    }
                     <MudText Typo="Typo.body2"><strong>Electron Configuration:</strong> @CurrentItem.electron_configuration</MudText>
                     <MudText Typo="Typo.body2"><strong>Electron Affinity:</strong> @CurrentItem.electron_affinity</MudText>
                     <MudText Typo="Typo.body2"><strong>Electronegativity:</strong> @CurrentItem.electronegativity_pauling</MudText>
@@ -66,23 +69,28 @@ else
             </MudContainer>
         </MudMainContent>
     </MudLayout>
-
 }
 
 @code {
     [Parameter]
-    public string sku { get; set; }
-    private Products CurrentItem { get; set; }
-    private Products[] ProdList { get; set; }
+    public string Sku { get; set; }
+    private static Products? CurrentItem { get; set; }
+    private Products[]? ProdList { get; set; }
     private Products? nextItem { get; set; }
     private Products? prevItem { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        CurrentItem = await http.GetFromJsonAsync<Products>($"http://localhost:5132/products/{sku}");
+
         ProdList = await http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
 
+        CurrentItem = await http.GetFromJsonAsync<Products>($"http://localhost:5132/products/{Sku}");
+
         if (CurrentItem.number != ProdList.Length)
+        {
+            nextItem = ProdList.FirstOrDefault(p => p.number == CurrentItem.number + 1);
+        }
+        else if (nextItem == null)
         {
             nextItem = ProdList.FirstOrDefault(p => p.number == CurrentItem.number + 1);
         }
@@ -90,7 +98,13 @@ else
         {
             nextItem = null;
         }
+
+
         if (CurrentItem.number != 0)
+        {
+            prevItem = ProdList.FirstOrDefault(p => p.number == CurrentItem.number - 1);
+        }
+        else if (prevItem == null)
         {
             prevItem = ProdList.FirstOrDefault(p => p.number == CurrentItem.number - 1);
         }
@@ -102,8 +116,10 @@ else
 
     private void GoToProduct(int sku)
     {
-        UriHelper.NavigateTo($"shop/{sku}");
-        UriHelper.Refresh();
+        CurrentItem = ProdList.FirstOrDefault(p => p.sku == sku);
+        Sku = CurrentItem.sku.ToString();
+        UriHelper.NavigateTo($"shop/{Sku}", true);
+        StateHasChanged();
     }
 
 }

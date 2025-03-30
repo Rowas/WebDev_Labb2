@@ -29,7 +29,6 @@
 </MudGrid>
 @code {
 	private Products[]? products;
-	// private string? Param = null;
 
 	private void OpenItem(string Param)
 	{
@@ -39,6 +38,6 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-	products = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+		products = Layout.MainLayout.productsList;
 	}
 }
