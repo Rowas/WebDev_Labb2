@@ -90,9 +90,9 @@ else
     protected override async Task OnInitializedAsync()
     {
 
-        ProdList = await http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+        ProdList = await http.GetFromJsonAsync<Products[]>("https://localhost:7248/products");
 
-        CurrentItem = await http.GetFromJsonAsync<Products>($"http://localhost:5132/products/{Sku}");
+        CurrentItem = await http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{Sku}");
 
         if (CurrentItem.number != ProdList.Length)
         {

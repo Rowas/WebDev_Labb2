@@ -50,7 +50,7 @@
     {
         if (productsList == null)
         {
-            productsList = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+            productsList = await Http.GetFromJsonAsync<Products[]>("https://localhost:7248/products");
         }
     }
 

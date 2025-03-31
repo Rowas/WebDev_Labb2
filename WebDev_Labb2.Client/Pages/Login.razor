@@ -38,18 +38,18 @@
     {
         <MudAlert Severity="Severity.Success">Registration successful!</MudAlert>
     }
-	@if (RegFail)
-	{
-		<MudAlert Severity="Severity.Error">Registration failed!</MudAlert>
-	})
+    @if (RegFail)
+    {
+        <MudAlert Severity="Severity.Error">Registration failed!</MudAlert>
+    }
     @if (LogInSuccess)
     {
-        <MudAlert Severity="Severity.Success">Login successful!</MudAlert>
+        <MudAlert Severity="Severity.Success">@loginMSG</MudAlert>
     }
     @if (LogInFail)
-	{
-		<MudAlert Severity="Severity.Error">Incorrect Email and/or Password!</MudAlert>
-	}
+    {
+        <MudAlert Severity="Severity.Error">Incorrect Email and/or Password!</MudAlert>
+    }
 </MudMainContent>
 
 @code {
@@ -58,10 +58,12 @@
 
     private int selectedTab = 0;
 
+    private string loginMSG { get; set; }
+
     private bool RegSuccess { get; set; } = false;
-	private bool RegFail { get; set; } = false;
+    private bool RegFail { get; set; } = false;
     private bool LogInSuccess { get; set; } = false;
-	private bool LogInFail { get; set; } = false;
+    private bool LogInFail { get; set; } = false;
 
     public class LoginAccountForm
     {
@@ -109,8 +111,8 @@
 
         public string UserName
         {
-            get => FirstName.Substring(0, 1) + LastName.Substring(0, 1);
-            set => UserName = FirstName.Substring(0, 1) + LastName.Substring(0, 1);
+            get => FirstName.Substring(0, 3) + LastName.Substring(0, 1);
+            set => UserName = FirstName.Substring(0, 3) + LastName.Substring(0, 1);
         }
 
     }
@@ -130,10 +132,11 @@
                     city = regModel.City,
                     country = regModel.Country
                 },
+                password = regModel.Password,
                 username = regModel.UserName,
                 userlevel = "customer"
             };
-        var response = await Http.PostAsJsonAsync<Customers>("http://localhost:5132/customers", newCustomer);
+        var response = await Http.PostAsJsonAsync<Customers>("https://localhost:7248/customers", newCustomer);
         if (response.IsSuccessStatusCode)
         {
             RegSuccess = true;
@@ -144,8 +147,15 @@
         }
         StateHasChanged();
     }
-    private void OnValidSubmitLogin(EditContext context)
+    private async Task OnValidSubmitLogin(EditContext context)
     {
+        CustomerLogin loginPackage = new CustomerLogin
+            {
+                email = loginModel.Email,
+                password = loginModel.Password
+            };
+        var response = await Http.PostAsJsonAsync<CustomerLogin>("https://localhost:7248/customers/login", loginPackage);
+        loginMSG = response.Content.ReadAsStringAsync().Result.ToString();
         LogInSuccess = true;
         StateHasChanged();
     }
@@ -153,5 +163,11 @@
     private void OnSelectedTabChanged(int index)
     {
         selectedTab = index;
+    }
+
+    private class CustomerLogin
+    {
+        public string email { get; set; }
+        public string password { get; set; }
     }
 }

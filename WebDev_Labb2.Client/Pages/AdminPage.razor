@@ -51,8 +51,8 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		customerList = await Http.GetFromJsonAsync<Customers[]>("http://localhost:5132/customers");
-		productList = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+		customerList = await Http.GetFromJsonAsync<Customers[]>("https://localhost:7248/customers");
+		productList = await Http.GetFromJsonAsync<Products[]>("https://localhost:7248/products");
 	}
 
 	private void NewCustomer()
@@ -136,7 +136,7 @@
 	private async void SearchCustomer()
 	{
 		apiCall = false;
-		customer = await Http.GetFromJsonAsync<Customers>($"http://localhost:5132/customers/{customerSearch}");
+		customer = await Http.GetFromJsonAsync<Customers>($"https://localhost:7248/customers/{customerSearch}");
 		apiCall = true;
 		if (customer == null)
 		{
@@ -149,7 +149,7 @@
 	private async void SearchProduct()
 	{
 		apiCall = false;
-		product = await Http.GetFromJsonAsync<Products>($"http://localhost:5132/products/{productSearch}");
+		product = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{productSearch}");
 		apiCall = true;
 		if (product == null)
 		{
@@ -160,7 +160,7 @@
 
 	private async void RegUser()
 	{
-		var response = await Http.PostAsJsonAsync<Customers>("http://localhost:5132/customers", customer);
+		var response = await Http.PostAsJsonAsync<Customers>("https://localhost:7248/customers", customer);
 		if (response.StatusCode == System.Net.HttpStatusCode.OK)
 		{
 			apiCall = true;
@@ -171,7 +171,7 @@
 
 	private async void RegProduct()
 	{
-		var response = await Http.PostAsJsonAsync<Products>("http://localhost:5132/products", product);
+		var response = await Http.PostAsJsonAsync<Products>("https://localhost:7248/products", product);
 		if (response.StatusCode == System.Net.HttpStatusCode.OK)
 		{
 			prodRegSuccess = true;
@@ -181,7 +181,7 @@
 
 	private async void UpdateUser()
 	{
-		var response = await Http.PatchAsJsonAsync<Customers>("http://localhost:5132/customers", customer);
+		var response = await Http.PatchAsJsonAsync<Customers>("https://localhost:7248/customers", customer);
 		if (response.StatusCode == System.Net.HttpStatusCode.OK)
 		{
 			apiCall = true;
