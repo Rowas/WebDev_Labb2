@@ -17,11 +17,19 @@ else
                         &larr; @prevItem.name
                     </MudButton>
                 }
+                else
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Disabled="true">&larr; No previous item</MudButton>
+                }
                 @if(nextItem != null)
                 {
                     <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="() => GoToProduct(nextItem.sku)">
                         @nextItem.name &rarr;
                     </MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Disabled="true">No next item &rarr;</MudButton>
                 }
             </MudContainer>
             <MudDivider Class="my-2" />
