@@ -1,39 +1,56 @@
 ﻿@page "/login"
 @using System.ComponentModel.DataAnnotations
+@inject HttpClient Http
 
-    <MudMainContent>
-        <MudTabs Centered="true" @bind-ActivePanelIndex="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-            <EditForm Model="@regModel" OnValidSubmit="OnValidSubmit">
-                <MudTabPanel Text="login">
-                    <MudTextField @bind-Value="loginModel.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" InputMode="InputMode.email" />
-                    <MudTextField @bind-Value="loginModel.Password" Label="Password" Placeholder="Enter password..." Variant="Variant.Outlined" InputType="InputType.Password" />
-                    <MudCheckBox @bind-value="loginModel.rememberMe" Label="Remember Me" />
-                    <MudCardActions>
-                        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Login</MudButton>
-                    </MudCardActions>
-                </MudTabPanel>
-            </EditForm>
-            <EditForm Model="@regModel" OnValidSubmit="OnValidSubmit">
+<MudMainContent>
+    <MudTabs Centered="true" @bind-ActivePanelIndex="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+        <EditForm Model="@regModel" OnValidSubmit="OnValidSubmitLogin">
+            <MudTabPanel Text="login">
+                <MudTextField @bind-Value="loginModel.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" InputMode="InputMode.email" />
+                <MudTextField @bind-Value="loginModel.Password" Label="Password" Placeholder="Enter password..." Variant="Variant.Outlined" InputType="InputType.Password" />
+                <MudCheckBox @bind-value="loginModel.rememberMe" Label="Remember Me" />
+                <MudCardActions>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Login</MudButton>
+                </MudCardActions>
+            </MudTabPanel>
+        </EditForm>
+        <EditForm Model="@regModel" OnValidSubmit="OnValidSubmitReg">
             <DataAnnotationsValidator/>
-                <MudTabPanel Text="register">
-                    <MudTextField @bind-Value="regModel.Email" Label="Email" Placeholder="Enter email" Variant="Variant.Outlined" InputType="InputType.Email" />
-                    <MudTextField @bind-Value="regModel.FirstName" Label="First Name" Placeholder="First name" Variant="Variant.Outlined" InputType="InputType.Text" />
-                    <MudTextField @bind-Value="regModel.LastName" Label="Last Name" Placeholder="Last name" Variant="Variant.Outlined" InputType="InputType.Text" />
-                    <MudTextField @bind-Value="regModel.Mobile_Number" Label="Mobile Number" Placeholder="Mobile number" Variant="Variant.Outlined" InputType="InputType.Text" />
-                    <MudTextField @bind-Value="regModel.Street" Label="Street" Placeholder="Street" Variant="Variant.Outlined" InputType="InputType.Text" />
-                    <MudTextField @bind-Value="regModel.Post_Code" Label="Post Code" Placeholder="Post code" Variant="Variant.Outlined" InputType="InputType.Text" />
-                    <MudTextField @bind-Value="regModel.City" Label="City" Placeholder="City" Variant="Variant.Outlined" InputType="InputType.Text" />
-                    <MudTextField @bind-Value="regModel.Country" Label="Country" Variant="Variant.Outlined" Disabled="true"></MudTextField>
-                    <br />
-                    <MudTextField Label="Password" Variant="Variant.Outlined" @bind-Value="regModel.Password" For="@(() => regModel.Password)" InputType="InputType.Password" />
-                    <MudTextField Label="Repeat Password" Variant="Variant.Outlined" @bind-Value="regModel.Password2" For="@(() => regModel.Password2)" InputType="InputType.Password" />
-                    <MudCardActions>
-                        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Register</MudButton>
-                    </MudCardActions>
-                </MudTabPanel>
-            </EditForm>
-        </MudTabs>
-    </MudMainContent>
+            <MudTabPanel Text="register">
+                <MudTextField @bind-Value="regModel.Email" Label="Email" Placeholder="Enter email" Variant="Variant.Outlined" InputType="InputType.Email" />
+                <MudTextField @bind-Value="regModel.FirstName" Label="First Name" Placeholder="First name" Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="regModel.LastName" Label="Last Name" Placeholder="Last name" Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="regModel.Mobile_Number" Label="Mobile Number" Placeholder="Mobile number" Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="regModel.Street" Label="Street" Placeholder="Street" Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="regModel.Post_Code" Label="Post Code" Placeholder="Post code" Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="regModel.City" Label="City" Placeholder="City" Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="regModel.Country" Label="Country" Variant="Variant.Outlined" Disabled="true"></MudTextField>
+                <br />
+                <MudTextField Label="Password" Variant="Variant.Outlined" @bind-Value="regModel.Password" For="@(() => regModel.Password)" InputType="InputType.Password" />
+                <MudTextField Label="Repeat Password" Variant="Variant.Outlined" @bind-Value="regModel.Password2" For="@(() => regModel.Password2)" InputType="InputType.Password" />
+                <MudCardActions>
+                    <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Register</MudButton>
+                </MudCardActions>
+            </MudTabPanel>
+        </EditForm>
+    </MudTabs>
+    @if (RegSuccess)
+    {
+        <MudAlert Severity="Severity.Success">Registration successful!</MudAlert>
+    }
+	@if (RegFail)
+	{
+		<MudAlert Severity="Severity.Error">Registration failed!</MudAlert>
+	})
+    @if (LogInSuccess)
+    {
+        <MudAlert Severity="Severity.Success">Login successful!</MudAlert>
+    }
+    @if (LogInFail)
+	{
+		<MudAlert Severity="Severity.Error">Incorrect Email and/or Password!</MudAlert>
+	}
+</MudMainContent>
 
 @code {
     RegisterAccountForm regModel = new RegisterAccountForm();
@@ -41,7 +58,10 @@
 
     private int selectedTab = 0;
 
-    private bool success;
+    private bool RegSuccess { get; set; } = false;
+	private bool RegFail { get; set; } = false;
+    private bool LogInSuccess { get; set; } = false;
+	private bool LogInFail { get; set; } = false;
 
     public class LoginAccountForm
     {
@@ -78,7 +98,7 @@
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-        
+
         [Required]
         [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
         public string Password { get; set; }
@@ -87,17 +107,46 @@
         [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
         public string Password2 { get; set; }
 
-        private string UserName
+        public string UserName
         {
             get => FirstName.Substring(0, 1) + LastName.Substring(0, 1);
             set => UserName = FirstName.Substring(0, 1) + LastName.Substring(0, 1);
         }
-        
+
     }
 
-    private void OnValidSubmit(EditContext context)
+    private async Task OnValidSubmitReg(EditContext context)
     {
-        success = true;
+        Customers newCustomer = new()
+            {
+                email = regModel.Email,
+                firstname = regModel.FirstName,
+                lastname = regModel.LastName,
+                mobile_number = regModel.Mobile_Number,
+                delivery_adress = new DeliveryAddress
+                {
+                    street = regModel.Street,
+                    post_code = regModel.Post_Code,
+                    city = regModel.City,
+                    country = regModel.Country
+                },
+                username = regModel.UserName,
+                userlevel = "customer"
+            };
+        var response = await Http.PostAsJsonAsync<Customers>("http://localhost:5132/customers", newCustomer);
+        if (response.IsSuccessStatusCode)
+        {
+            RegSuccess = true;
+        }
+        else
+        {
+            RegFail = true;
+        }
+        StateHasChanged();
+    }
+    private void OnValidSubmitLogin(EditContext context)
+    {
+        LogInSuccess = true;
         StateHasChanged();
     }
 
