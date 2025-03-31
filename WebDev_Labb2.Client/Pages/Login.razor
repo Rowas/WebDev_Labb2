@@ -1,39 +1,57 @@
 ﻿@page "/login"
 @using System.ComponentModel.DataAnnotations
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator/>
     <MudMainContent>
         <MudTabs Centered="true" @bind-ActivePanelIndex="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-            <MudTabPanel Text="login">
-                <MudTextField @bind-Value="model.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" InputMode="InputMode.email"/>
-                <MudTextField @bind-Value="model.Password" Label="Password" Placeholder="Enter password..." Variant="Variant.Outlined" InputType="InputType.Password" />
-                <MudCheckBox @bind-value="rememberMe" Label="Remember Me" />
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Login</MudButton>
-            </MudTabPanel>
-            <MudTabPanel Text="register">
-                <MudTextField @bind-Value="model.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" />
-                <MudTextField @bind-Value="model.Password" Label="Password" Placeholder="Enter password..." Variant="Variant.Outlined" InputType="InputType.Password" />
-                <MudTextField @bind-Value="model.FirstName" Label="First Name" Placeholder="First name..." Variant="Variant.Outlined" InputType="InputType.Text" />
-                <MudTextField @bind-Value="model.LastName" Label="Last Name" Placeholder="Last name..." Variant="Variant.Outlined" InputType="InputType.Text" />
-                <MudTextField @bind-Value="model.Mobile_Number" Label="Mobile Number" Placeholder="Mobile number..." Variant="Variant.Outlined" InputType="InputType.Text" />
-                <MudTextField @bind-Value="model.Street" Label="Street" Placeholder="Street..." Variant="Variant.Outlined" InputType="InputType.Text" />
-                <MudTextField @bind-Value="model.Post_Code" Label="Post Code" Placeholder="Post code..." Variant="Variant.Outlined" InputType="InputType.Text" />
-                <MudTextField @bind-Value="model.City" Label="City" Placeholder="City..." Variant="Variant.Outlined" InputType="InputType.Text" />
-                <MudTextField @bind-Value="model.Country" Label="Country" Variant="Variant.Outlined" Disabled="true"></MudTextField>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled">Register</MudButton>
-            </MudTabPanel>
+            <EditForm Model="@regModel" OnValidSubmit="OnValidSubmit">
+                <MudTabPanel Text="login">
+                    <MudTextField @bind-Value="loginModel.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" InputMode="InputMode.email" />
+                    <MudTextField @bind-Value="loginModel.Password" Label="Password" Placeholder="Enter password..." Variant="Variant.Outlined" InputType="InputType.Password" />
+                    <MudCheckBox @bind-value="loginModel.rememberMe" Label="Remember Me" />
+                    <MudCardActions>
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Login</MudButton>
+                    </MudCardActions>
+                </MudTabPanel>
+            </EditForm>
+            <EditForm Model="@regModel" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator/>
+                <MudTabPanel Text="register">
+                    <MudTextField @bind-Value="regModel.Email" Label="Email" Placeholder="Enter email" Variant="Variant.Outlined" InputType="InputType.Email" />
+                    <MudTextField @bind-Value="regModel.FirstName" Label="First Name" Placeholder="First name" Variant="Variant.Outlined" InputType="InputType.Text" />
+                    <MudTextField @bind-Value="regModel.LastName" Label="Last Name" Placeholder="Last name" Variant="Variant.Outlined" InputType="InputType.Text" />
+                    <MudTextField @bind-Value="regModel.Mobile_Number" Label="Mobile Number" Placeholder="Mobile number" Variant="Variant.Outlined" InputType="InputType.Text" />
+                    <MudTextField @bind-Value="regModel.Street" Label="Street" Placeholder="Street" Variant="Variant.Outlined" InputType="InputType.Text" />
+                    <MudTextField @bind-Value="regModel.Post_Code" Label="Post Code" Placeholder="Post code" Variant="Variant.Outlined" InputType="InputType.Text" />
+                    <MudTextField @bind-Value="regModel.City" Label="City" Placeholder="City" Variant="Variant.Outlined" InputType="InputType.Text" />
+                    <MudTextField @bind-Value="regModel.Country" Label="Country" Variant="Variant.Outlined" Disabled="true"></MudTextField>
+                    <br />
+                    <MudTextField Label="Password" Variant="Variant.Outlined" @bind-Value="regModel.Password" For="@(() => regModel.Password)" InputType="InputType.Password" />
+                    <MudTextField Label="Repeat Password" Variant="Variant.Outlined" @bind-Value="regModel.Password2" For="@(() => regModel.Password2)" InputType="InputType.Password" />
+                    <MudCardActions>
+                        <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Register</MudButton>
+                    </MudCardActions>
+                </MudTabPanel>
+            </EditForm>
         </MudTabs>
     </MudMainContent>
-</EditForm>
 
 @code {
-    RegisterAccountForm model = new RegisterAccountForm();
+    RegisterAccountForm regModel = new RegisterAccountForm();
+    LoginAccountForm loginModel = new LoginAccountForm();
+
     private int selectedTab = 0;
 
     private bool success;
 
-    private bool rememberMe;
+    public class LoginAccountForm
+    {
+        [Required]
+        public string Email { get; set; }
+        [Required]
+        public string Password { get; set; }
+        [Required]
+        public bool rememberMe = false;
+    }
 
     public class RegisterAccountForm
     {
@@ -66,7 +84,7 @@
         public string Password { get; set; }
 
         [Required]
-        [Compare(nameof(Password))]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
         public string Password2 { get; set; }
 
         private string UserName
