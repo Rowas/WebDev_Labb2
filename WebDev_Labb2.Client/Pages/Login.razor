@@ -1,0 +1,90 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <MudMainContent>
+        <MudTabs Centered="true" @bind-ActivePanelIndex="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+            <MudTabPanel Text="login">
+                <MudTextField @bind-Value="model.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" InputMode="InputMode.email"/>
+                <MudTextField @bind-Value="model.Password" Label="Password" Placeholder="Enter password..." Variant="Variant.Outlined" InputType="InputType.Password" />
+                <MudCheckBox @bind-value="rememberMe" Label="Remember Me" />
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Login</MudButton>
+            </MudTabPanel>
+            <MudTabPanel Text="register">
+                <MudTextField @bind-Value="model.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" />
+                <MudTextField @bind-Value="model.Password" Label="Password" Placeholder="Enter password..." Variant="Variant.Outlined" InputType="InputType.Password" />
+                <MudTextField @bind-Value="model.FirstName" Label="First Name" Placeholder="First name..." Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="model.LastName" Label="Last Name" Placeholder="Last name..." Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="model.Mobile_Number" Label="Mobile Number" Placeholder="Mobile number..." Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="model.Street" Label="Street" Placeholder="Street..." Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="model.Post_Code" Label="Post Code" Placeholder="Post code..." Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="model.City" Label="City" Placeholder="City..." Variant="Variant.Outlined" InputType="InputType.Text" />
+                <MudTextField @bind-Value="model.Country" Label="Country" Variant="Variant.Outlined" Disabled="true"></MudTextField>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled">Register</MudButton>
+            </MudTabPanel>
+        </MudTabs>
+    </MudMainContent>
+</EditForm>
+
+@code {
+    RegisterAccountForm model = new RegisterAccountForm();
+    private int selectedTab = 0;
+
+    private bool success;
+
+    private bool rememberMe;
+
+    public class RegisterAccountForm
+    {
+        [Required]
+        public string FirstName { get; set; }
+
+        [Required]
+        public string LastName { get; set; }
+
+        [Required]
+        public string Mobile_Number { get; set; }
+
+        [Required]
+        public string Street { get; set; }
+
+        [Required]
+        public string Post_Code { get; set; }
+
+        [Required]
+        public string City { get; set; }
+
+        public string Country { get; set; } = "Sweden";
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+        
+        [Required]
+        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
+        public string Password { get; set; }
+
+        [Required]
+        [Compare(nameof(Password))]
+        public string Password2 { get; set; }
+
+        private string UserName
+        {
+            get => FirstName.Substring(0, 1) + LastName.Substring(0, 1);
+            set => UserName = FirstName.Substring(0, 1) + LastName.Substring(0, 1);
+        }
+        
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        success = true;
+        StateHasChanged();
+    }
+
+    private void OnSelectedTabChanged(int index)
+    {
+        selectedTab = index;
+    }
+}
