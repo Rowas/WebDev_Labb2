@@ -154,7 +154,7 @@
                 email = loginModel.Email,
                 password = loginModel.Password
             };
-        var response = await Http.PostAsJsonAsync<CustomerLogin>("https://localhost:7248/customers/login", loginPackage);
+        var response = await Http.PostAsJsonAsync<CustomerLogin>("https://localhost:7248/login", loginPackage);
         loginMSG = response.Content.ReadAsStringAsync().Result.ToString();
         LogInSuccess = true;
         StateHasChanged();
