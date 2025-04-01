@@ -6,10 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\WebDev_Labb2.Client\Pages\Component.razor" Link="Component.razor" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <ProjectReference Include="..\WebDev_Labb2.Client\WebDev_Labb2.Client.csproj" />

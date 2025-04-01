@@ -105,9 +105,9 @@ else
 
         //specificCustomer = await Http.GetFromJsonAsync<Customers>($"https://localhost:7248/customers/{requestEmail}");
 
-        //customers = await Http.GetFromJsonAsync<Customers[]>("http://localhost:5132/customers");
+        //customers = await Http.GetFromJsonAsync<Customers[]>("https://localhost:7248/customers");
 
-        products = await Http.GetFromJsonAsync<Products[]>("http://localhost:5132/products");
+        products = await Http.GetFromJsonAsync<Products[]>("https://localhost:7248/products");
     }
 
 }

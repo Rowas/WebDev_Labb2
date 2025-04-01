@@ -3,10 +3,15 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject HttpClient Http
 @inject ProtectedSessionStorage BrowserStorage
+@rendermode @(new InteractiveServerRenderMode())
+@attribute [ExcludeFromInteractiveRouting]
+
+<p>@RendererInfo.Name </p>
+<p>@AssignedRenderMode </p>
 
 <MudMainContent>
     <MudTabs Centered="true" @bind-ActivePanelIndex="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-        <EditForm Model="@regModel" OnValidSubmit="OnValidSubmitLogin">
+        <EditForm FormName="login" Model="@regModel" OnValidSubmit="OnValidSubmitLogin">
             <MudTabPanel Text="login">
                 <MudTextField @bind-Value="loginModel.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" InputMode="InputMode.email" />
                 <MudTextField @bind-Value="loginModel.Password" Label="Password" Placeholder="Enter password..." Variant="Variant.Outlined" InputType="InputType.Password" />
@@ -16,7 +21,7 @@
                 </MudCardActions>
             </MudTabPanel>
         </EditForm>
-        <EditForm Model="@regModel" OnValidSubmit="OnValidSubmitReg">
+        <EditForm FormName="register" Model="@regModel" OnValidSubmit="OnValidSubmitReg">
             <DataAnnotationsValidator/>
             <MudTabPanel Text="register">
                 <MudTextField @bind-Value="regModel.Email" Label="Email" Placeholder="Enter email" Variant="Variant.Outlined" InputType="InputType.Email" />
@@ -56,6 +61,7 @@
 </MudMainContent>
 
 @code {
+
     RegisterAccountForm regModel = new RegisterAccountForm();
     LoginAccountForm loginModel = new LoginAccountForm();
 
@@ -115,8 +121,8 @@
 
         public string UserName
         {
-            get => FirstName.Substring(0, 3) + LastName.Substring(0, 1);
-            set => UserName = FirstName.Substring(0, 3) + LastName.Substring(0, 1);
+            get => FirstName.Substring(0, 2) + LastName.Substring(0, 2);
+            set => UserName = FirstName.Substring(0, 2) + LastName.Substring(0, 2);
         }
 
     }
@@ -155,7 +161,7 @@
 
         JwtToken = await response.Content.ReadFromJsonAsync<Jwttoken>();
 
-        Save(JwtToken.token);
+        // Save(JwtToken.token);
 
         loginMSG = response.Content.ReadAsStringAsync().Result;
         LogInStatus = response.StatusCode;

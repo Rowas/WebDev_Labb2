@@ -1,9 +1,9 @@
-﻿@page "/login-client"
+﻿@* @page "/login-client" *@
 @using System.ComponentModel.DataAnnotations
 @inject HttpClient Http
 
 <MudMainContent>
-    <MudTabs Centered="true" @bind-ActivePanelIndex="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+    <MudTabs Centered="true" @bind-ActivePanelIndex="@selectedTab" SelectedTabChanged="OnSelectedTabChanged">
         <EditForm Model="@regModel" OnValidSubmit="OnValidSubmitLogin">
             <MudTabPanel Text="login">
                 <MudTextField @bind-Value="loginModel.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" InputMode="InputMode.email" />
@@ -151,28 +151,28 @@
 
         JwtToken = await response.Content.ReadFromJsonAsync<Jwttoken>();
 
-        Save(JwtToken.token);
+        // Save(JwtToken.token);
 
         loginMSG = response.Content.ReadAsStringAsync().Result;
         LogInStatus = response.StatusCode;
         StateHasChanged();
     }
 
-    public async Task Read()
-    {
-        // var result = await BrowserStorage.GetAsync<string>("JWT");
-        // return result.Success ? result.Value : "";
-    }
+    // public async Task Read()
+    // {
+    //     var result = await BrowserStorage.GetAsync<string>("JWT");
+    //     return result.Success ? result.Value : "";
+    // }
 
-    public async Task Delete()
-    {
-        // await BrowserStorage.DeleteAsync("name");
-    }
+    // public async Task Delete()
+    // {
+    //     await BrowserStorage.DeleteAsync("name");
+    // }
 
-    public async Task Save(string token)
-    {
-        // await BrowserStorage.SetAsync("JWT", token);
-    }
+    // public async Task Save(string token)
+    // {
+    //     await BrowserStorage.SetAsync("JWT", token);
+    // }
 
     private void OnSelectedTabChanged(int index)
     {

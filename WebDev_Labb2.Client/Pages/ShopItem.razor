@@ -1,6 +1,7 @@
 ﻿@page "/shop/{sku}"
 @inject HttpClient http
 @inject NavigationManager UriHelper
+@rendermode @(new InteractiveAutoRenderMode(prerender: false))
 
 @if (CurrentItem == null)
 {
