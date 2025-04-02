@@ -51,8 +51,8 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		customerList = await Http.GetFromJsonAsync<Customers[]>("https://localhost:7248/customers");
-		productList = await Http.GetFromJsonAsync<Products[]>("https://localhost:7248/products");
+		//customerList = await Http.GetFromJsonAsync<Customers[]>("https://localhost:7248/customers");
+		//productList = await Http.GetFromJsonAsync<Products[]>("https://localhost:7248/products");
 	}
 
 	private void NewCustomer()
