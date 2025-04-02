@@ -2,12 +2,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 16.0.0.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebDev_Labb2", "WebDev_Labb2\WebDev_Labb2.csproj", "{DA9AA68C-35DE-45D4-9EED-F67EF8FDD4A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebDev_Labb2", "WebDev_Labb2.csproj", "{DA9AA68C-35DE-45D4-9EED-F67EF8FDD4A7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{71B5FE6A-4D50-EAFC-99D3-8DF52DFE1326} = {71B5FE6A-4D50-EAFC-99D3-8DF52DFE1326}
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebDev_Labb2.Client", "WebDev_Labb2.Client\WebDev_Labb2.Client.csproj", "{F923423C-CDB7-49E7-9D1F-0E7E085CD599}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDev_Labb2_API", "..\WebDev_Labb2_API\WebDev_Labb2_API\WebDev_Labb2_API.csproj", "{71B5FE6A-4D50-EAFC-99D3-8DF52DFE1326}"
 EndProject
