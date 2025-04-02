@@ -4,9 +4,6 @@
 @inject HttpClient Http
 @inject ProtectedSessionStorage BrowserStorage
 
-<p>@RendererInfo.Name </p>
-<p>@AssignedRenderMode </p>
-
 <MudMainContent>
     <MudTabs Centered="true" @bind-ActivePanelIndex="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
         <EditForm FormName="login" Model="@regModel" OnValidSubmit="OnValidSubmitLogin">
@@ -159,7 +156,7 @@
 
         JwtToken = await response.Content.ReadFromJsonAsync<Jwttoken>();
 
-        // Save(JwtToken.token);
+        Save(JwtToken.token);
 
         loginMSG = response.Content.ReadAsStringAsync().Result;
         LogInStatus = response.StatusCode;
