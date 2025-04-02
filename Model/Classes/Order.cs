@@ -1,4 +1,4 @@
-﻿namespace WebDev_Labb2
+﻿namespace WebDev_Labb2.Model.Classes
 {
     public class Order
     {

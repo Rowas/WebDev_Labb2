@@ -1,4 +1,4 @@
-﻿namespace WebDev_Labb2.Client.Classes
+﻿namespace WebDev_Labb2.Model.Classes
 {
     public class Customers
     {
