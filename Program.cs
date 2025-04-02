@@ -25,7 +25,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidIssuer = "localhost",
         ValidAudience = "localhost",
         IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes("NoKeyForYou")),
+            System.Text.Encoding.UTF8.GetBytes("I am the administrator, this key is my password, Identify me.")),
         ClockSkew = TimeSpan.Zero
     };
 });
