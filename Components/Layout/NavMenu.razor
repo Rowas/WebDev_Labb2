@@ -1,4 +1,7 @@
-﻿
+﻿@inject ProtectedSessionStorage BrowserStorage
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+
 <MudNavMenu class="d-none d-md-flex align-center flex-grow-1">
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <MudNavLink Href="shop" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ShoppingCart">One-Stop-Shop</MudNavLink>
@@ -6,7 +9,49 @@
 
     <MudNavLink Href="api-test" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Api-test</MudNavLink>
 
-    <MudNavLink Class="ml-auto" Href="login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
-</MudNavMenu>
+    @if (isLoggedIn)
+    {
+        <MudNavLink Class="ml-auto" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout" OnClick="Logout">Logga ut</MudNavLink>
+        <MudText Class="ml-2">Inloggad som: @userName</MudText>
+    }
+    else
+    {
+        <MudNavLink Class="ml-auto" Href="login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Logga in</MudNavLink>
+    }
+    </MudNavMenu>
 
+    @code {
+    private bool isLoggedIn = false;
+    private bool isInitialized = false;
+    private string userName = string.Empty;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await CheckLoginStatus();
+            isInitialized = true;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CheckLoginStatus()
+    {
+        var jwtResult = await BrowserStorage.GetAsync<string>("JWT");
+        var userResult = await BrowserStorage.GetAsync<string>("UserName");
+
+        isLoggedIn = jwtResult.Success && !string.IsNullOrEmpty(jwtResult.Value);
+        userName = userResult.Success ? userResult.Value : string.Empty;
+    }
+
+    private async Task Logout()
+    {
+        await BrowserStorage.DeleteAsync("JWT");
+        await BrowserStorage.DeleteAsync("UserName");
+        isLoggedIn = false;
+        userName = string.Empty;
+        await CheckLoginStatus();
+        StateHasChanged();
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+}

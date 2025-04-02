@@ -1,90 +1,105 @@
 ﻿@page "/api-test"
 @inject HttpClient Http
+@inject ProtectedSessionStorage BrowserStorage
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Net.Http.Headers
+@inject NavigationManager NavigationManager
 
 <h3>api_test</h3>
 
 <br />
 
-@if (products == null)
+@if (accessDenied)
 {
-    <br />
-    <p><em>Loading...</em></p>
+    <MudAlert Severity="Severity.Error" Class="mt-4">
+        <MudText>Åtkomst nekad</MudText>
+        <MudText Typo="Typo.body2">Du har inte behörighet att se denna information. Endast administratörer har tillgång.</MudText>
+    </MudAlert>
 }
 else
 {
-    foreach (var element in products)
+    @if (products == null)
     {
         <br />
-        <p>Product: @element.name</p>
+        <p><em>Loading...</em></p>
     }
-}
+    else
+    {
+        foreach (var element in products)
+        {
+            <br />
+            <p>Product: @element.name</p>
+        }
+    }
 
-@if (specificProductSku == null)
-{
-    <br />
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <br />
-    <p>Product: @specificProductSku.name</p>
-}
-@if (specificProductName == null)
-{
-    <br />
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <br />
-    <p>Product: @specificProductName.name</p>
-}
-
-@if (customers == null)
-{
-    <br />
-    <p><em>Loading...</em></p>
-}
-else
-{
-    foreach (var customer in customers)
+    @if (specificProductSku == null)
     {
         <br />
-        <p>UserName: @customer.username</p>
-        <p>UserLevel: @customer.userlevel</p>
-        <p>FirstName: @customer.firstname</p>
-        <p>LastName: @customer.lastname</p>
-        <p>Email: @customer.email</p>
-        <p>Mobile Number: @customer.mobile_number</p>
-        <p>Street: @customer.delivery_adress.street</p>
-        <p>Post Code: @customer.delivery_adress.post_code</p>
-        <p>City: @customer.delivery_adress.city</p>
-        <p>Country: @customer.delivery_adress.country</p>
+        <p><em>Loading...</em></p>
     }
-}
+    else
+    {
+        <br />
+        <p>Product: @specificProductSku.name</p>
+    }
+    @if (specificProductName == null)
+    {
+        <br />
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <br />
+        <p>Product: @specificProductName.name</p>
+    }
 
-@if (specificCustomer == null)
-{
-    <br />
-    <p><em>Searching for: @requestEmail</em></p>
-    <p><em>No content</em></p>
-}
-else
-{
-    <br />
-    <p>UserName: @specificCustomer.username</p>
-    <p>UserLevel: @specificCustomer.userlevel</p>
-    <p>FirstName: @specificCustomer.firstname</p>
-    <p>LastName: @specificCustomer.lastname</p>
-    <p>Email: @specificCustomer.email</p>
-    <p>Mobile Number: @specificCustomer.mobile_number</p>
-    <p>Street: @specificCustomer.delivery_adress.street</p>
-    <p>Post Code: @specificCustomer.delivery_adress.post_code</p>
-    <p>City: @specificCustomer.delivery_adress.city</p>
-    <p>Country: @specificCustomer.delivery_adress.country</p>
+    @if (customers == null)
+    {
+        <br />
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        foreach (var customer in customers)
+        {
+            <br />
+            <p>UserName: @customer.username</p>
+            <p>UserLevel: @customer.userlevel</p>
+            <p>FirstName: @customer.firstname</p>
+            <p>LastName: @customer.lastname</p>
+            <p>Email: @customer.email</p>
+            <p>Mobile Number: @customer.mobile_number</p>
+            <p>Street: @customer.delivery_adress.street</p>
+            <p>Post Code: @customer.delivery_adress.post_code</p>
+            <p>City: @customer.delivery_adress.city</p>
+            <p>Country: @customer.delivery_adress.country</p>
+        }
+    }
+
+    @if (specificCustomer == null)
+    {
+        <br />
+        <p><em>Searching for: @requestEmail</em></p>
+        <p><em>No content</em></p>
+    }
+    else
+    {
+        <br />
+        <p>UserName: @specificCustomer.username</p>
+        <p>UserLevel: @specificCustomer.userlevel</p>
+        <p>FirstName: @specificCustomer.firstname</p>
+        <p>LastName: @specificCustomer.lastname</p>
+        <p>Email: @specificCustomer.email</p>
+        <p>Mobile Number: @specificCustomer.mobile_number</p>
+        <p>Street: @specificCustomer.delivery_adress.street</p>
+        <p>Post Code: @specificCustomer.delivery_adress.post_code</p>
+        <p>City: @specificCustomer.delivery_adress.city</p>
+        <p>Country: @specificCustomer.delivery_adress.country</p>
+    }
 }
 
 @code {
+    private bool accessDenied = false;
     private Customers[]? customers;
     private Customers? specificCustomer;
     private Products[]? products;
@@ -96,18 +111,48 @@ else
     private int requestSku = 111000;
     private string requestName = "Helium";
 
+    public string storedToken { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-		//specificProductSku = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestSku}");
+        //specificProductSku = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestSku}");
 
-		//specificProductName = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestName}");
+        //specificProductName = await Http.GetFromJsonAsync<Products>($"https://localhost:7248/products/{requestName}");
 
         //specificCustomer = await Http.GetFromJsonAsync<Customers>($"https://localhost:7248/customers/{requestEmail}");
 
-        //customers = await Http.GetFromJsonAsync<Customers[]>("https://localhost:7248/customers");
+        await Read();
 
-        products = await Http.GetFromJsonAsync<Products[]>("https://localhost:7248/products");
+        if (string.IsNullOrEmpty(storedToken))
+        {
+            // Om ingen token finns, omdirigera till login
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", storedToken);
+
+        try
+        {
+            customers = await Http.GetFromJsonAsync<Customers[]>("https://localhost:7248/customers");
+            products = await Http.GetFromJsonAsync<Products[]>("https://localhost:7248/products");
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            await BrowserStorage.DeleteAsync("JWT");
+            NavigationManager.NavigateTo("/login");
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+        {
+            accessDenied = true;
+            StateHasChanged();
+        }
+    }
+
+    public async Task Read()
+    {
+        var result = await BrowserStorage.GetAsync<string>("JWT");
+        storedToken = result.Success ? result.Value : "";
     }
 
 }
