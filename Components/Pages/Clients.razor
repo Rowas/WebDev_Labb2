@@ -1,5 +1,9 @@
 ﻿@page "/clients"
 @inject HttpClient Http
+@inject ProtectedSessionStorage BrowserStorage
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Net.Http.Headers
+@inject NavigationManager NavigationManager
 @using System.ComponentModel.DataAnnotations
 
 <h1>Customer</h1>
@@ -59,21 +63,50 @@ else
     bool failure = false;
     bool RegSuccess = false;
 
-    // protected override async Task OnInitializedAsync()
-    // {
-        
-    // }
+    public string storedToken { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await Read();
+            if (string.IsNullOrEmpty(storedToken))
+            {
+                NavigationManager.NavigateTo("/login");
+                return;
+            }
+
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", storedToken);
+        }
+		catch (HttpRequestException ex)
+		{
+			if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+			{
+				NavigationManager.NavigateTo("/login");
+			}
+		}
+    }
+
+    public async Task Read()
+    {
+        var result = await BrowserStorage.GetAsync<string>("JWT");
+        storedToken = result.Success ? result.Value : "";
+    }
 
     private async Task Search(string email)
     {
-        customer = await Http.GetFromJsonAsync<Customers>($"http://localhost:5132/customers/{email}");
-        if (customer == null)
+        try
         {
-            failure = true;
+            customer = await Http.GetFromJsonAsync<Customers>($"https://localhost:7248/customers/{email}");
+            failure = customer == null;
         }
-        else
+        catch (HttpRequestException ex)
         {
-            failure = false;
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+            failure = true;
         }
     }
 
