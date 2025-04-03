@@ -5,70 +5,104 @@
 @using System.Net.Http.Headers
 @inject NavigationManager NavigationManager
 @using System.ComponentModel.DataAnnotations
+@using System.IdentityModel.Tokens.Jwt
 
 <h1>Customer</h1>
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-    <MudCard>
-        <MudForm >
-            <MudTextField Label="Email" Class="mt-3" @bind-Value="model.Email" For="@(() => model.Email)" />
-        </MudForm>
-        <MudCardActions>
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Search</MudButton>
-        </MudCardActions>
-        @if (failure == true)
-        {
-            <MudAlert Severity="Severity.Error" Class="m-3">No customer found</MudAlert>
-        }
-    </MudCard>
-</EditForm>
-
-@if (customer == null)
+@if (isLoading)
 {
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="Empty" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="Empty" Disabled="true" />
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
 }
 else
 {
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserName" @bind-Value="customer.username" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="UserLevel" @bind-Value="customer.userlevel" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="FirstName" @bind-Value="customer.firstname" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="LastName" @bind-Value="customer.lastname" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Email" @bind-Value="customer.email" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Mobile Number" @bind-Value="customer.mobile_number" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Street" @bind-Value="customer.delivery_adress.street" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Post Code" @bind-Value="customer.delivery_adress.post_code" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="City" @bind-Value="customer.delivery_adress.city" Disabled="true" />
-    <MudTextField Variant="Variant.Outlined" style="color: white" Label="Country" @bind-Value="customer.delivery_adress.country" Disabled="true" />
+    @if (isAdmin)
+    {
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudCard>
+                <MudForm>
+                    <MudTextField Label="Username" Class="mt-3" @bind-Value="model.Username" For="@(() => model.Username)" />
+                </MudForm>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Search</MudButton>
+                </MudCardActions>
+                @if (failure == true)
+                {
+                    <MudAlert Severity="Severity.Error" Class="m-3">No customer found</MudAlert>
+                }
+            </MudCard>
+        </EditForm>
+    }
+
+    @if (customer != null)
+    {
+        <MudCard Class="mt-3">
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Variant="Variant.Outlined" Label="UserName" Value="@customer.username" ReadOnly="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Variant="Variant.Outlined" Label="UserLevel" Value="@customer.userlevel" ReadOnly="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Variant="Variant.Outlined" Label="FirstName" Value="@customer.firstname" ReadOnly="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Variant="Variant.Outlined" Label="LastName" Value="@customer.lastname" ReadOnly="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Variant="Variant.Outlined" Label="Email" Value="@customer.email" ReadOnly="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Variant="Variant.Outlined" Label="Mobile Number" Value="@customer.mobile_number" ReadOnly="true" />
+                    </MudItem>
+                    @if (customer.delivery_adress != null)
+                    {
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Class="mb-2">Delivery Address</MudText>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField Variant="Variant.Outlined" Label="Street" Value="@customer.delivery_adress.street" ReadOnly="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField Variant="Variant.Outlined" Label="Post Code" Value="@customer.delivery_adress.post_code" ReadOnly="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField Variant="Variant.Outlined" Label="City" Value="@customer.delivery_adress.city" ReadOnly="true" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField Variant="Variant.Outlined" Label="Country" Value="@customer.delivery_adress.country" ReadOnly="true" />
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    }
 }
 
 @code {
 
-    CustomerSearch model = new CustomerSearch();
-
-    private bool newCustomer = false;
-    private Customers? customer;
-    private Customers[]? customers;
-    private string Empty { get; set; } = "No content";
-    private string requestEmail { get; set; }
-    bool failure = false;
-    bool RegSuccess = false;
-
+    private CustomerSearch model = new CustomerSearch();
+    private bool isAdmin = false;
+    private Customers? customer = null;
+    private bool failure = false;
+    private bool isLoading = true;
     public string storedToken { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        await InitializeComponent();
+        StateHasChanged();
+    }
+
+    private async Task InitializeComponent()
+    {
         try
         {
+            isLoading = true;
+            StateHasChanged();
+
             await Read();
             if (string.IsNullOrEmpty(storedToken))
             {
@@ -77,14 +111,61 @@ else
             }
 
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", storedToken);
+            
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(storedToken);
+            var username = token.Claims.FirstOrDefault(c => c.Type == "username")?.Value;
+            isAdmin = token.Claims.FirstOrDefault(c => c.Type == "isAdmin")?.Value == "true";
+            
+            Console.WriteLine($"Username from token: {username}"); // Debug utskrift
+            
+            if (!string.IsNullOrEmpty(username))
+            {
+                await LoadUserData(username);
+            }
         }
-		catch (HttpRequestException ex)
-		{
-			if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-			{
-				NavigationManager.NavigateTo("/login");
-			}
-		}
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in InitializeComponent: {ex.Message}");
+            NavigationManager.NavigateTo("/login");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadUserData(string username)
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+            
+            var response = await Http.GetFromJsonAsync<Customers>($"https://localhost:7248/Customers/username/{username}");
+            if (response != null)
+            {
+                customer = response;
+                Console.WriteLine($"Customer data loaded: {customer.username}"); // Debug utskrift
+                failure = false;
+            }
+            else
+            {
+                Console.WriteLine("Response was null");
+                failure = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading user data: {ex.Message}");
+            failure = true;
+            customer = null;
+        }
+        finally
+        {
+            isLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     public async Task Read()
@@ -93,33 +174,17 @@ else
         storedToken = result.Success ? result.Value : "";
     }
 
-    private async Task Search(string email)
+    private async Task OnValidSubmit(EditContext context)
     {
-        try
+        if (isAdmin)
         {
-            customer = await Http.GetFromJsonAsync<Customers>($"https://localhost:7248/customers/{email}");
-            failure = customer == null;
-        }
-        catch (HttpRequestException ex)
-        {
-            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            {
-                NavigationManager.NavigateTo("/login");
-            }
-            failure = true;
+            await LoadUserData(model.Username);
         }
     }
 
     public class CustomerSearch
     {
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-    }
-
-    private async void OnValidSubmit(EditContext context)
-    {
-        await Search(model.Email);
-        StateHasChanged();
+        public string Username { get; set; }
     }
 }
