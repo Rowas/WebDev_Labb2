@@ -1,67 +1,298 @@
 ﻿@page "/admin"
 @inject HttpClient Http
-<MudLayout>
+@inject IAuthenticationService AuthService
+@inject NavigationManager NavigationManager
+@inject ProtectedSessionStorage BrowserStorage
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Net.Http.Headers
 
+@if (!isInitialized)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else if (!isAuthorized)
+{
+    <MudAlert Severity="Severity.Error" Class="my-4">
+        <MudText>Åtkomst nekad</MudText>
+        <MudText Typo="Typo.body2">Du har inte behörighet att se denna sida. Endast administratörer har tillgång.</MudText>
+    </MudAlert>
+}
+else
+{
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudPaper Elevation="3" Class="pa-4">
+        <MudText Typo="Typo.h4" Class="mb-4">Administratörspanel</MudText>
 
+        @* Huvudnavigering *@
+        <MudGrid Class="mb-4">
+            <MudItem xs="12">
+                <MudPaper Class="pa-4" Elevation="2">
+                    <MudGrid Justify="Justify.SpaceBetween" Spacing="2">
+                        <MudItem xs="12" sm="4">
+                            <MudCard Elevation="2" Class="pa-2">
+                                <MudText Typo="Typo.h6" Class="mb-2">Kundhantering</MudText>
+                                <MudStack>
+                                    <MudButton Variant="Variant.Filled" 
+                                    Color="Color.Primary" 
+                                    OnClick="NewCustomer" 
+                                    StartIcon="@Icons.Material.Filled.PersonAdd"
+                                    FullWidth="true">
+                                        Registrera ny kund
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Filled" 
+                                    Color="Color.Secondary" 
+                                    OnClick="EditCustomer"
+                                    StartIcon="@Icons.Material.Filled.Edit"
+                                    FullWidth="true">
+                                        Redigera kund
+                                    </MudButton>
+                                </MudStack>
+                            </MudCard>
+                        </MudItem>
 
-	<h3>Admin Page</h3>
-	<MudPaper Class="py-3" Elevation="1">
-		<MudNavMenu class="d-none d-md-flex align-center flex-grow-1">
-			<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewCustomer" Style="min-width:200px; padding-right:15px;">Register New Customer</MudButton>
-			<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="EditCustomer" Style="min-width:200px; padding-right:15px;">Edit Customer</MudButton>
-			<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="NewProduct" Style="min-width:200px; padding-right:15px;">Register New Product</MudButton>
-			<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="EditProduct" Style="min-width:200px;">Edit Product</MudButton>
-		</MudNavMenu>
-	</MudPaper>
-	<MudMainContent>
-		@if(newCustomer == true || newProduct == true)
-		{
-				 
-		}
-	</MudMainContent>
-	<MudContainer class="d-flex justify-center flex-grow-1 gap-4" Elevation="0">
-		<MudNavMenu>
-			<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="UpdateDatabase" Style="min-width:200px; height: auto;">Update Database</MudButton>
-		</MudNavMenu>
-	</MudContainer>
-</MudLayout>
+                        <MudItem xs="12" sm="4">
+                            <MudCard Elevation="2" Class="pa-2">
+                                <MudText Typo="Typo.h6" Class="mb-2">Produkthantering</MudText>
+                                <MudStack>
+                                    <MudButton Variant="Variant.Filled" 
+                                    Color="Color.Primary" 
+                                    OnClick="NewProduct"
+                                    StartIcon="@Icons.Material.Filled.AddBox"
+                                    FullWidth="true">
+                                        Registrera ny produkt
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Filled" 
+                                    Color="Color.Secondary" 
+                                    OnClick="EditProduct"
+                                    StartIcon="@Icons.Material.Filled.Edit"
+                                    FullWidth="true">
+                                        Redigera produkt
+                                    </MudButton>
+                                </MudStack>
+                            </MudCard>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudCard Elevation="2" Class="pa-2">
+                                <MudText Typo="Typo.h6" Class="mb-2">Orderhantering</MudText>
+                                <MudStack>
+                                    <MudButton Variant="Variant.Filled" 
+                                    Color="Color.Primary" 
+                                    OnClick="NewOrder"
+                                    StartIcon="@Icons.Material.Filled.AddShoppingCart"
+                                    FullWidth="true">
+                                        Skapa ny order
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Filled" 
+                                    Color="Color.Secondary" 
+                                    OnClick="EditOrder"
+                                    StartIcon="@Icons.Material.Filled.Edit"
+                                    FullWidth="true">
+                                        Hantera order
+                                    </MudButton>
+                                </MudStack>
+                            </MudCard>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        @* Innehållssektion *@
+        <MudPaper Class="pa-4" Elevation="2">
+            @if (newCustomer)
+            {
+                <MudText Typo="Typo.h5" Class="mb-4">Registrera ny kund</MudText>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="customer.firstname" Label="Förnamn" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="customer.lastname" Label="Efternamn" Variant="Variant.Outlined" Class="mt-3"/>
+                        <MudTextField @bind-Value="customer.email" Label="E-post" Variant="Variant.Outlined" Class="mt-3"/>
+                        <MudTextField @bind-Value="customer.mobile_number" Label="Telefon" Variant="Variant.Outlined" Class="mt-3"/>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="customer.delivery_adress.street" Label="Gatuadress" Variant="Variant.Outlined"/>
+                        <MudTextField @bind-Value="customer.delivery_adress.post_code" Label="Postnummer" Variant="Variant.Outlined" Class="mt-3"/>
+                        <MudTextField @bind-Value="customer.delivery_adress.city" Label="Ort" Variant="Variant.Outlined" Class="mt-3"/>
+                        <MudTextField @bind-Value="customer.delivery_adress.country" Label="Land" Variant="Variant.Outlined" Class="mt-3"/>
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex justify-end">
+                        <MudButton Variant="Variant.Filled" 
+                        Color="Color.Primary" 
+                        OnClick="RegUser"
+                        StartIcon="@Icons.Material.Filled.Save">
+                            Spara kund
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            }
+            else if (newProduct)
+            {
+                <MudText Typo="Typo.h5" Class="mb-4">Registrera ny produkt</MudText>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField @bind-Value="product.sku" Label="SKU" Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="product.name" Label="Namn" Variant="Variant.Outlined" Class="mt-3"/>
+                        <MudNumericField @bind-Value="product.price" Label="Pris" Variant="Variant.Outlined" Class="mt-3"/>
+                        <MudSwitch @bind-Value="product.in_stock" Label="I lager" Color="Color.Primary" Class="mt-3"/>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="product.category" Label="Kategori" Variant="Variant.Outlined"/>
+                        <MudTextField @bind-Value="product.summary" Label="Beskrivning" Variant="Variant.Outlined" Class="mt-3" Lines="3"/>
+                    </MudItem>
+                    <MudItem xs="12" Class="d-flex justify-end">
+                        <MudButton Variant="Variant.Filled" 
+                        Color="Color.Primary" 
+                        OnClick="RegProduct"
+                        StartIcon="@Icons.Material.Filled.Save">
+                            Spara produkt
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            }
+            else if (editCustomer)
+            {
+                <MudText Typo="Typo.h5" Class="mb-4">Redigera kund</MudText>
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="customerSearch" 
+                        Label="Sök kund (e-post)" 
+                        Variant="Variant.Outlined"
+                        Adornment="Adornment.End"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        OnAdornmentClick="SearchCustomer"/>
+                    </MudItem>
+                </MudGrid>
+                @if (apiCall && customer != null)
+                {
+                    <MudGrid Class="mt-4">
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="customer.firstname" Label="Förnamn" Variant="Variant.Outlined" />
+                            <MudTextField @bind-Value="customer.lastname" Label="Efternamn" Variant="Variant.Outlined" Class="mt-3"/>
+                            <MudTextField @bind-Value="customer.mobile_number" Label="Telefon" Variant="Variant.Outlined" Class="mt-3"/>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="customer.delivery_adress.street" Label="Gatuadress" Variant="Variant.Outlined"/>
+                            <MudTextField @bind-Value="customer.delivery_adress.post_code" Label="Postnummer" Variant="Variant.Outlined" Class="mt-3"/>
+                            <MudTextField @bind-Value="customer.delivery_adress.city" Label="Ort" Variant="Variant.Outlined" Class="mt-3"/>
+                        </MudItem>
+                        <MudItem xs="12" Class="d-flex justify-end">
+                            <MudButton Variant="Variant.Filled" 
+                            Color="Color.Primary" 
+                            OnClick="UpdateUser"
+                            StartIcon="@Icons.Material.Filled.Save">
+                                Uppdatera kund
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                }
+            }
+        </MudPaper>
+
+        @* Statusmeddelanden *@
+        @if (!string.IsNullOrEmpty(apiResponse))
+        {
+            <MudAlert Severity="Severity.Success" Class="mt-4">@apiResponse</MudAlert>
+        }
+    </MudPaper>
+
+    @* Databasuppdatering *@
+    <MudPaper Class="pa-4 mt-4" Elevation="2">
+        <MudButton Variant="Variant.Filled" 
+        Color="Color.Warning" 
+        OnClick="UpdateDatabase"
+        StartIcon="@Icons.Material.Filled.Update"
+        FullWidth="true">
+            Uppdatera databas
+        </MudButton>
+    </MudPaper>
+    </MudContainer>
+}
+
 @code {
-	private bool newCustomer = false;
-	private bool newProduct = false;
-	private bool editProduct = false;
-	private bool editCustomer = false;
+    private bool newCustomer = false;
+    private bool newProduct = false;
+    private bool editProduct = false;
+    private bool editCustomer = false;
+	private bool editOrder = false;
+	private bool newOrder = false;
 
+    private bool accessDenied = false;
 
-	private bool prodRegSuccess = false;
+    private bool prodRegSuccess = false;
 
-	private bool apiCall = false;
+    private bool apiCall = false;
 
-	private string apiResponse = string.Empty;
+    private string apiResponse = string.Empty;
 
-	private string customerSearch = string.Empty;
-	private string productSearch = string.Empty;
-	private string editField = string.Empty;
-	private string editValue = string.Empty;
+    private string customerSearch = string.Empty;
+    private string productSearch = string.Empty;
+    private string editField = string.Empty;
+    private string editValue = string.Empty;
 
-	Customers customer = new Customers();
-	Products product = new Products();
+    Customers customer = new Customers();
+    Products product = new Products();
 
-	Customers[] customerList;
-	Products[] productList;
+    Customers[] customerList;
+    Products[] productList;
 
-	protected override async Task OnInitializedAsync()
-	{
-		//customerList = await Http.GetFromJsonAsync<Customers[]>("https://localhost:7248/customers");
-		//productList = await Http.GetFromJsonAsync<Products[]>("https://localhost:7248/products");
-	}
+    public string storedToken { get; set; }
 
-	private void NewCustomer()
-	{
-		newProduct = false;
-		editCustomer = false;
-		editProduct = false;
-		newCustomer = true;
-		customer = new Customers()
+    private bool isAuthorized = false;
+    private bool isInitialized = false;
+    private string token = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var result = await BrowserStorage.GetAsync<string>("JWT");
+            if (!result.Success)
+            {
+                NavigationManager.NavigateTo("/login");
+                return;
+            }
+
+            var token = result.Value;
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            try
+            {
+                var response = await Http.GetAsync("https://localhost:7248/login/validate");
+                if (response.IsSuccessStatusCode)
+                {
+                    var validationResult = await response.Content.ReadFromJsonAsync<LoginValidationResponse>();
+                    isAuthorized = validationResult?.user?.userlevel?.ToLower() == "admin";
+                }
+            }
+            catch
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+
+            isInitialized = true;
+            StateHasChanged();
+        }
+    }
+
+    public async Task Read()
+    {
+        var result = await BrowserStorage.GetAsync<string>("JWT");
+        storedToken = result.Success ? result.Value : "";
+    }
+
+    private void NewCustomer()
+    {
+        newProduct = false;
+        editCustomer = false;
+        editProduct = false;
+        newCustomer = true;
+        customer = new Customers()
 			{
 				email = "",
 				username = "",
@@ -77,21 +308,21 @@
 					country = ""
 				}
 			};
-		StateHasChanged();
-	}
+        StateHasChanged();
+    }
 
-	private void UpdateDatabase()
-	{
-		
-	}
+    private void UpdateDatabase()
+    {
 
-	private void NewProduct()
-	{
-		newCustomer = false;
-		editCustomer = false;
-		editProduct = false;
-		newProduct = true;
-		product = new Products()
+    }
+
+    private void NewProduct()
+    {
+        newCustomer = false;
+        editCustomer = false;
+        editProduct = false;
+        newProduct = true;
+        product = new Products()
 			{
 				sku = 0,
 				price = 0,
@@ -112,26 +343,48 @@
 				cpk_hex = "",
 				block = ""
 			};
-		StateHasChanged();
-	}
+        StateHasChanged();
+    }
 
-	private void EditProduct()
-	{
-		newCustomer = false;
-		newProduct = false;
-		editCustomer = false;
-		editProduct = true;
-		StateHasChanged();
-	}
+    private void NewOrder()
+    {
+        newCustomer = false;
+        newProduct = false;
+        newOrder = true;
+        editCustomer = false;
+        editProduct = false;
+        editOrder = false;
+        StateHasChanged();
+    }
 
-	private void EditCustomer()
-	{
-		newCustomer = false;
-		newProduct = false;
-		editProduct = false;
-		editCustomer = true;
-		StateHasChanged();
-	}
+    private void EditProduct()
+    {
+        newCustomer = false;
+        newProduct = false;
+        editCustomer = false;
+        editProduct = true;
+        StateHasChanged();
+    }
+
+    private void EditCustomer()
+    {
+        newCustomer = false;
+        newProduct = false;
+        editProduct = false;
+        editCustomer = true;
+        StateHasChanged();
+    }
+
+    private void EditOrder()
+    {
+        newCustomer = false;
+        newProduct = false;
+        newOrder = false;
+        editProduct = false;
+        editCustomer = false;
+        editOrder = true;
+        StateHasChanged();
+    }
 
 	private async void SearchCustomer()
 	{
@@ -190,8 +443,18 @@
 		}
 	}
 
-	// private async void UpdateProduct()
-	// {
-		
-	// }
+    private class LoginValidationResponse
+    {
+        public string message { get; set; }
+        public UserInfo user { get; set; }
+    }
+
+    private class UserInfo
+    {
+        public string username { get; set; }
+        public string userlevel { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string email { get; set; }
+    }
 }

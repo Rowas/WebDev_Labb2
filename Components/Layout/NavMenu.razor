@@ -1,6 +1,8 @@
 ﻿@inject ProtectedSessionStorage BrowserStorage
 @inject NavigationManager NavigationManager
+@inject HttpClient Http
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using System.Net.Http.Headers
 
 <MudNavMenu class="d-none d-md-flex align-center flex-grow-1">
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
@@ -11,6 +13,10 @@
 
     @if (isLoggedIn)
     {
+        @if (isAdmin)
+        {
+            <MudNavLink Href="admin" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AdminPanelSettings">Admin</MudNavLink>
+        }
         <MudNavLink Class="ml-auto" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout" OnClick="Logout">Logga ut</MudNavLink>
         <MudText Class="ml-2">Inloggad som: @userName</MudText>
     }
@@ -20,10 +26,14 @@
     }
     </MudNavMenu>
 
+
+
     @code {
     private bool isLoggedIn = false;
+    private bool isAdmin = false;
     private bool isInitialized = false;
     private string userName = string.Empty;
+    private string token = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -42,6 +52,32 @@
 
         isLoggedIn = jwtResult.Success && !string.IsNullOrEmpty(jwtResult.Value);
         userName = userResult.Success ? userResult.Value : string.Empty;
+
+        if (isLoggedIn)
+        {
+            token = jwtResult.Value;
+            await CheckAdminStatus();
+        }
+    }
+
+    private async Task CheckAdminStatus()
+    {
+        try
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await client.GetAsync("https://localhost:7248/login/validate");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<LoginValidationResponse>();
+                isAdmin = result?.user?.userlevel?.ToLower() == "admin";
+            }
+        }
+        catch
+        {
+            isAdmin = false;
+        }
     }
 
     private async Task Logout()
@@ -49,9 +85,25 @@
         await BrowserStorage.DeleteAsync("JWT");
         await BrowserStorage.DeleteAsync("UserName");
         isLoggedIn = false;
+        isAdmin = false;
         userName = string.Empty;
         await CheckLoginStatus();
         StateHasChanged();
         NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+
+    private class LoginValidationResponse
+    {
+        public string message { get; set; }
+        public UserInfo user { get; set; }
+    }
+
+    private class UserInfo
+    {
+        public string username { get; set; }
+        public string userlevel { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string email { get; set; }
     }
 }
