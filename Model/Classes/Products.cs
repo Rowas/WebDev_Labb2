@@ -16,8 +16,8 @@
         public double? molar_heat { get; set; }
         public string? named_by { get; set; }
         public int number { get; set; }
-        public int? period { get; set; }
-        public int? group { get; set; }
+        public int period { get; set; }
+        public int group { get; set; }
         public string phase { get; set; }
         public string? source { get; set; }
         public string? bohr_model_image { get; set; }
@@ -35,7 +35,7 @@
         public double? electron_affinity { get; set; }
         public double? electronegativity_pauling { get; set; }
         public double[]? ionization_energies { get; set; }
-        public string cpk_hex { get; set; }
-        public string block { get; set; }
+        public string? cpk_hex { get; set; }
+        public string? block { get; set; }
     }
 }

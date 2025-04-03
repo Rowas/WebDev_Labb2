@@ -73,7 +73,7 @@ else
                     <MudText Typo="Typo.body2"><strong>Electronegativity:</strong> @CurrentItem.electronegativity_pauling</MudText>
                     <MudText Typo="Typo.body2"><strong>Block:</strong> @CurrentItem.block</MudText>
                     <MudDivider Class="my-2" />
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Add to Cart</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" OnClick="AddToCart">Add to Cart</MudButton>
                 </MudPaper>
             </MudContainer>
         </MudMainContent>
@@ -129,6 +129,11 @@ else
         Sku = CurrentItem.sku.ToString();
         UriHelper.NavigateTo($"shop/{Sku}", true);
         StateHasChanged();
+    }
+
+    private void AddToCart()
+    {
+        
     }
 
 }
