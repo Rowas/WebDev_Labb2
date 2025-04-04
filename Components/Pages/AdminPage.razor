@@ -159,6 +159,12 @@ else
                 }
                 else if (editCustomer)
                 {
+                    <MudSelect T="string" Label="Användare" @bind-Value="customerSearch" Variant="Variant.Outlined">
+                        @foreach (var customer in customerList)
+                        {
+                            <MudSelectItem Value="@customer.email">@customer.username (@customer.firstname @customer.lastname)</MudSelectItem>
+                        }
+                    </MudSelect>
                     <MudText Typo="Typo.h5" Class="mb-4">Redigera kund</MudText>
                     <MudGrid>
                         <MudItem xs="12" sm="6">
@@ -238,45 +244,147 @@ else
                         </MudGrid>
                     }
                 }
+                else if (newOrder)
+                {
+                    <MudText Typo="Typo.h5" Class="mb-4">Registrera ny order</MudText>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudSelect T="string" Label="Användare" @bind-Value="order.username" Variant="Variant.Outlined">
+                                @foreach (var customer in customerList)
+                                {
+                                    <MudSelectItem Value="@customer.username">@customer.username (@customer.firstname @customer.lastname)</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudDatePicker @bind-Date="order.order_date" Label="Orderdatum" Variant="Variant.Outlined" Class="mt-3" />
+                            <MudDatePicker @bind-Date="order.delivery_date" Label="Leveransdatum" Variant="Variant.Outlined" Class="mt-3" />
+                            <MudSelect T="string" Label="Status" @bind-Value="order.status" Variant="Variant.Outlined" Class="mt-3">
+                                <MudSelectItem Value="@("Pending")">Pending</MudSelectItem>
+                                <MudSelectItem Value="@("Processing")">Processing</MudSelectItem>
+                                <MudSelectItem Value="@("Shipped")">Shipped</MudSelectItem>
+                                <MudSelectItem Value="@("Delivered")">Delivered</MudSelectItem>
+                                <MudSelectItem Value="@("Cancelled")">Cancelled</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudCard Elevation="0">
+                                <MudCardHeader>
+                                    <MudText Typo="Typo.h6">Orderrader</MudText>
+                                </MudCardHeader>
+                                <MudCardContent>
+                                    @foreach (var item in order.item_list)
+                                    {
+                                        <MudGrid>
+                                            <MudItem xs="8">
+                                                <MudSelect T="int" Label="Produkt" @bind-Value="item.sku" Variant="Variant.Outlined">
+                                                    @foreach (var product in productList)
+                                                    {
+                                                        <MudSelectItem Value="@product.sku">@product.name (@product.sku)</MudSelectItem>
+                                                    }
+                                                </MudSelect>
+                                            </MudItem>
+                                            <MudItem xs="4">
+                                                <MudNumericField @bind-Value="item.quantity" Label="Antal" Variant="Variant.Outlined" Min="1" />
+                                            </MudItem>
+                                        </MudGrid>
+                                    }
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Filled"
+                                    Color="Color.Secondary"
+                                    OnClick="@(() => order.item_list.Add(new ItemList { sku = 0, quantity = 1 }))"
+                                    StartIcon="@Icons.Material.Filled.Add">
+                                        Lägg till produkt
+                                    </MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                        <MudItem xs="12" Class="d-flex justify-end">
+                            <MudButton Variant="Variant.Filled"
+                            Color="Color.Primary"
+                            OnClick="RegOrder"
+                            StartIcon="@Icons.Material.Filled.Save">
+                                Spara order
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                }
+                else if (editOrder)
+                {
+                    <MudText Typo="Typo.h5" Class="mb-4">Hantera ordrar</MudText>
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="orderSearch"
+                            Label="Sök order (Order ID)"
+                            Variant="Variant.Outlined"
+                            Adornment="Adornment.End"
+                            AdornmentIcon="@Icons.Material.Filled.Search"
+                            OnAdornmentClick="SearchOrder" />
+                        </MudItem>
+                    </MudGrid>
+                    @if (apiCall && order != null)
+                    {
+                        <MudGrid Class="mt-4">
+                            <MudItem xs="12" sm="6">
+                                <MudSelect T="string" Label="Användare" @bind-Value="order.username" Variant="Variant.Outlined" Disabled="true">
+                                    <MudSelectItem Value="@order.username">@order.username</MudSelectItem>
+                                </MudSelect>
+                                <MudDatePicker @bind-Date="order.order_date" Label="Orderdatum" Variant="Variant.Outlined" Class="mt-3" Disabled="true" />
+                                <MudDatePicker @bind-Date="order.delivery_date" Label="Leveransdatum" Variant="Variant.Outlined" Class="mt-3" />
+                                <MudSelect T="string" Label="Status" @bind-Value="order.status" Variant="Variant.Outlined" Class="mt-3">
+                                    <MudSelectItem Value="@("Pending")">Pending</MudSelectItem>
+                                    <MudSelectItem Value="@("Processing")">Processing</MudSelectItem>
+                                    <MudSelectItem Value="@("Shipped")">Shipped</MudSelectItem>
+                                    <MudSelectItem Value="@("Delivered")">Delivered</MudSelectItem>
+                                    <MudSelectItem Value="@("Cancelled")">Cancelled</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudCard Elevation="0">
+                                    <MudCardHeader>
+                                        <MudText Typo="Typo.h6">Orderrader</MudText>
+                                    </MudCardHeader>
+                                    <MudCardContent>
+                                        @foreach (var item in order.item_list)
+                                        {
+                                            <MudGrid>
+                                                <MudItem xs="8">
+                                                    <MudSelect T="int" Label="Produkt" @bind-Value="item.sku" Variant="Variant.Outlined" Disabled="true">
+                                                        @foreach (var product in productList)
+                                                        {
+                                                            <MudSelectItem Value="@product.sku">@product.name (@product.sku)</MudSelectItem>
+                                                        }
+                                                    </MudSelect>
+                                                </MudItem>
+                                                <MudItem xs="4">
+                                                    <MudNumericField @bind-Value="item.quantity" Label="Antal" Variant="Variant.Outlined" Disabled="true" />
+                                                </MudItem>
+                                            </MudGrid>
+                                        }
+                                    </MudCardContent>
+                                </MudCard>
+                            </MudItem>
+                            <MudItem xs="12" Class="d-flex justify-end">
+                                <MudButton Variant="Variant.Filled"
+                                Color="Color.Primary"
+                                @* OnClick="@(() => UpdateOrderStatus(selectedOrder.order_id, selectedOrder.status))" *@
+                                StartIcon="@Icons.Material.Filled.Save">
+                                    Uppdatera order
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    }
+                }
             </MudPaper>
-
-            @* Statusmeddelanden *@
-            @if (!string.IsNullOrEmpty(apiResponse))
+            @if (string.IsNullOrEmpty(apiResponse) == false)
             {
                 <MudAlert Severity="Severity.Success" Class="mt-4">@apiResponse</MudAlert>
             }
         </MudPaper>
-
-        @* Databasuppdatering *@
-        @if (!pushMany)
-        {
-            <MudPaper Class="pa-4 mt-4" Elevation="2">
-                <MudButton Variant="Variant.Filled"
-                Color="Color.Tertiary"
-                OnClick="PushMany"
-                StartIcon="@Icons.Material.Filled.Update"
-                FullWidth="true">
-                    Uppdatera flera?
-                </MudButton>
-            </MudPaper>
-        }
-        @if (pushMany)
-        {   
-            <MudPaper Class="pa-4 mt-4" Elevation="2">
-                <MudButton Variant="Variant.Filled" 
-                Color="Color.Warning" 
-                OnClick="UpdateDatabase"
-                StartIcon="@Icons.Material.Filled.Update"
-                FullWidth="true">
-                    Uppdatera databas
-                </MudButton>
-            </MudPaper>
-        }
     </MudContainer>
+
 }
 
 @code {
-    private bool pushMany = false;
     private bool newCustomer = false;
     private bool newProduct = false;
     private bool editProduct = false;
@@ -294,14 +402,17 @@ else
 
     private string customerSearch = string.Empty;
     private string productSearch = string.Empty;
+    private string orderSearch = string.Empty;
     private string editField = string.Empty;
     private string editValue = string.Empty;
 
     Customers customer = new Customers();
     Products product = new Products();
+    Order order = new Order();
 
     List<Customers> customerList;
     List<Products> productList;
+    List<Order> orderList;
 
     public string storedToken { get; set; }
 
@@ -311,7 +422,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
+        
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -343,6 +454,7 @@ else
             }
             productList = await Http.GetFromJsonAsync<List<Products>>("https://localhost:7248/products");
             customerList = await Http.GetFromJsonAsync<List<Customers>>("https://localhost:7248/customers");
+            orderList = await Http.GetFromJsonAsync<List<Order>>("https://localhost:7248/orders");
             isInitialized = true;
             StateHasChanged();
         }
@@ -354,17 +466,14 @@ else
         storedToken = result.Success ? result.Value : "";
     }
 
-    private void PushMany()
-    {
-        pushMany = !pushMany;
-    }
-
-    private void NewCustomer()
+    private async void NewCustomer()
     {
         newProduct = false;
+        newCustomer = true;
+        newOrder = false;
         editCustomer = false;
         editProduct = false;
-        newCustomer = true;
+        product = null;
         customer = new Customers()
 			{
 				email = "",
@@ -384,42 +493,14 @@ else
         StateHasChanged();
     }
 
-    private async void UpdateDatabase()
-    {
-        var response = await Http.PutAsJsonAsync<List<Products>>("https://localhost:7248/products/bulk/", productList);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            apiCall = true;
-            apiResponse = response.Content.ReadAsStringAsync().Result;
-            StateHasChanged();
-        }
-        var response2 = await Http.PutAsJsonAsync<List<Customers>>("https://localhost:7248/customers/bulk/", customerList);
-        if (response2.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            apiCall = true;
-            apiResponse = response2.Content.ReadAsStringAsync().Result;
-            StateHasChanged();
-        }
-        if (response2.StatusCode == System.Net.HttpStatusCode.OK && response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            apiCall = true;
-            apiResponse = response.Content.ReadAsStringAsync().Result;
-            pushMany = !pushMany;
-            StateHasChanged();
-        }
-        else
-        {
-            apiCall = false;
-            apiResponse = "Något gick fel";
-        }
-    }
-
-    private void NewProduct()
+    private async void NewProduct()
     {
         newCustomer = false;
+        newProduct = true;
+        newOrder = false;
         editCustomer = false;
         editProduct = false;
-        newProduct = true;
+        customer = null;
         product = new Products()
 			{
                 sku = 0,
@@ -438,45 +519,74 @@ else
         StateHasChanged();
     }
 
-    private void NewOrder()
+    private async void NewOrder()
     {
+        customerList = await Http.GetFromJsonAsync<List<Customers>>("https://localhost:7248/customers");
+        productList = await Http.GetFromJsonAsync<List<Products>>("https://localhost:7248/products");
         newCustomer = false;
         newProduct = false;
         newOrder = true;
         editCustomer = false;
         editProduct = false;
         editOrder = false;
+        customer = null;
+        product = null;
+        order = new Order()
+        {
+            username = "",
+            order_id = "",
+            order_date = DateTime.Today,
+            delivery_date = DateTime.Today.AddDays(5),
+            status = "Pending",
+            item_list = new List<ItemList>()
+            {
+                new ItemList()
+                {
+                    sku = 0,
+                    quantity = 0
+                }
+            }
+        };
         StateHasChanged();
     }
 
-    private void EditProduct()
+    private async void EditProduct()
     {
         newCustomer = false;
         newProduct = false;
+        newOrder = false;
         editCustomer = false;
         editProduct = true;
         customer = null;
+        editOrder = true;
         StateHasChanged();
     }
 
-    private void EditCustomer()
+    private async void EditCustomer()
     {
         newCustomer = false;
         newProduct = false;
+        newOrder = false;
         editProduct = false;
         editCustomer = true;
         product = null;
+        editOrder = true;
         StateHasChanged();
     }
 
-    private void EditOrder()
+    private async void EditOrder()
     {
+        customerList = await Http.GetFromJsonAsync<List<Customers>>("https://localhost:7248/customers");
+        productList = await Http.GetFromJsonAsync<List<Products>>("https://localhost:7248/products");
+        orderList = await Http.GetFromJsonAsync<List<Order>>("https://localhost:7248/orders");
         newCustomer = false;
         newProduct = false;
         newOrder = false;
         editProduct = false;
         editCustomer = false;
         editOrder = true;
+        customer = null;
+        product = null;
         StateHasChanged();
     }
 
@@ -505,10 +615,20 @@ else
         StateHasChanged();
     }
 
+    private async void SearchOrder()
+    {
+        apiCall = false;
+        order = await Http.GetFromJsonAsync<Order>($"https://localhost:7248/orders/{orderSearch}");
+        apiCall = true;
+        if (order == null)
+        {
+			apiResponse = "Order not found";
+        }
+        StateHasChanged();
+    }
+
     private async void RegUser()
     {
-        if (!pushMany)
-        {
             var response = await Http.PostAsJsonAsync<Customers>("https://localhost:7248/customers", customer);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -516,38 +636,20 @@ else
 				apiResponse = "Successfully registered";
                 StateHasChanged();
             }
-        }
-        else
-        {
-            customerList.Add(customer);
-            StateHasChanged();
-        }
-
-
     }
 
     private async void RegProduct()
     {
-        if (!pushMany)
-        {
             var response = await Http.PostAsJsonAsync<Products>("https://localhost:7248/products", product);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 apiResponse = "Successfully registered";
                 StateHasChanged();
             }
-        }
-        else
-        {
-            customerList.Add(customer);
-            StateHasChanged();
-        }
     }
 
     private async void UpdateProduct()
     {
-        if (!pushMany)
-        {   
             var response = await Http.PutAsJsonAsync<Products>("https://localhost:7248/products/single/", product);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -555,34 +657,10 @@ else
                 apiResponse = "Successfully updated";
                 StateHasChanged();
             }
-        }
-        else
-        {
-            foreach (var p in productList)
-            {
-                if (p.sku == product.sku)
-                {
-                    p.price = product.price;
-                    p.in_stock = product.in_stock;
-                    p.name = product.name;
-                    p.atomic_mass = product.atomic_mass;
-                    p.category = product.category;
-                    p.number = product.number;
-                    p.period = product.period;
-                    p.group = product.group;
-                    p.phase = product.phase;
-                    p.summary = product.summary;
-                    p.symbol = product.symbol;
-                }
-            }
-            StateHasChanged();
-        }
     }
 
     private async void UpdateUser()
     {
-        if (!pushMany)
-        {
             var response = await Http.PatchAsJsonAsync<Customers>("https://localhost:7248/customers", customer);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -590,25 +668,28 @@ else
                 apiResponse = "Successfully updated";
                 StateHasChanged();
             }
-        }
-        else
-        {
-            foreach (var c in customerList)
-            {
-				if (c.email == customer.email)
-				{
-					c.firstname = customer.firstname;
-					c.lastname = customer.lastname;
-					c.mobile_number = customer.mobile_number;
-					c.delivery_adress.street = customer.delivery_adress.street;
-					c.delivery_adress.post_code = customer.delivery_adress.post_code;
-					c.delivery_adress.city = customer.delivery_adress.city;
-					c.delivery_adress.country = customer.delivery_adress.country;
-				}
-            }
-            StateHasChanged();
-		}
+	}
 
+    private async void RegOrder()
+	{
+		var response = await Http.PostAsJsonAsync<Order>("https://localhost:7248/orders", order);
+		if (response.StatusCode == System.Net.HttpStatusCode.OK)
+		{
+			apiCall = true;
+			apiResponse = "Successfully registered";
+			StateHasChanged();
+		}
+	}
+
+    private async void UpdateOrder()
+	{
+        var response = await Http.PutAsJsonAsync($"https://localhost:7248/orders/{order.order_id}", order);
+		if (response.StatusCode == System.Net.HttpStatusCode.OK)
+		{
+			apiCall = true;
+			apiResponse = "Successfully updated";
+			StateHasChanged();
+		}
 	}
 
     private class LoginValidationResponse
