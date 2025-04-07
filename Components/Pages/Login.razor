@@ -13,7 +13,6 @@
             <MudTabPanel Text="login">
                 <MudTextField @bind-Value="loginModel.Email" Label="Email" Placeholder="Enter email..." Variant="Variant.Outlined" InputType="InputType.Email" InputMode="InputMode.email" />
                 <MudTextField @bind-Value="loginModel.Password" Label="Password" Placeholder="Enter password..." Variant="Variant.Outlined" InputType="InputType.Password" />
-                <MudCheckBox @bind-value="loginModel.rememberMe" Label="Remember Me" />
                 <MudCardActions>
                     <MudButton Color="Color.Primary" Variant="Variant.Filled" ButtonType="ButtonType.Submit">Login</MudButton>
                 </MudCardActions>
@@ -176,22 +175,6 @@
         LogInStatus = response.StatusCode;
         StateHasChanged();
     }
-
-    // public async Task Read()
-    // {
-    //     var result = await BrowserStorage.GetAsync<string>("JWT");
-    //     storedToken = result.Success? result.Value: "";
-    // }
-
-    // public async Task Delete()
-    // {
-    //     await BrowserStorage.DeleteAsync("name");
-    // }
-
-    // public async Task Save(string token)
-    // {
-    //     await BrowserStorage.SetAsync("JWT", token);
-    // }
 
     private void OnSelectedTabChanged(int index)
     {
